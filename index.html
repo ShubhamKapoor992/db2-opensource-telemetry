@@ -82,6 +82,26 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--focus);outline-offs
 .tile-foot .pypi-link:hover{text-decoration:underline;}
 .tile-foot .snap-badge{font-size:12px;font-family:'IBM Plex Mono',monospace;color:var(--ph);}
 .roadmap-section-title{font-size:15px;font-weight:600;color:var(--tp);margin-bottom:8px;padding-bottom:5px;border-bottom:1px solid var(--b01);}
+.vscode-section-label{font-size:13px;color:var(--ts);margin:16px 0 8px;padding:6px 0 5px;border-bottom:1px solid var(--b01);display:flex;align-items:center;gap:8px;}
+.vscode-section-label strong{color:var(--tp);font-size:14px;font-weight:600;}
+.vscode-section-label .snap-note{font-size:12px;font-family:'IBM Plex Mono',monospace;color:var(--ph);margin-left:auto;}
+.vscode-card{background:var(--l01);border:1px solid var(--b00);margin-bottom:12px;}
+[data-theme="dark"] .vscode-card{border-color:transparent;}
+.vscode-card:hover{box-shadow:inset 0 0 0 1px var(--ia);}
+.vscode-card-head{padding:12px 18px 10px;border-bottom:1px solid var(--b00);}
+.vscode-card-head .vc-publisher{font-size:12px;color:var(--ph);font-family:'IBM Plex Mono',monospace;margin-bottom:6px;}
+.vscode-card-head .vc-name{font-family:'IBM Plex Mono',monospace;font-size:17px;font-weight:600;color:var(--tp);}
+.vscode-card-head .vc-desc{font-size:14px;line-height:21px;color:var(--ts);margin-top:8px;}
+.vscode-card-stats{display:grid;grid-template-columns:repeat(5,1fr);border-bottom:1px solid var(--b00);}
+@media(max-width:768px){.vscode-card-stats{grid-template-columns:repeat(3,1fr);}}
+.vscode-card-stats > div{padding:8px 14px;border-left:1px solid var(--b00);min-width:0;}
+.vscode-card-stats > div:first-child{border-left:none;}
+.vscode-card-stats .slabel{font-size:11px;text-transform:uppercase;letter-spacing:.3px;color:var(--ts);margin-bottom:6px;}
+.vscode-card-stats .sval{font-family:'IBM Plex Mono',monospace;font-size:22px;font-weight:500;color:var(--tp);}
+.vscode-card-foot{padding:7px 18px;display:flex;justify-content:space-between;align-items:center;}
+.vscode-card-foot .vc-link{color:var(--link);text-decoration:none;font-size:13px;font-weight:500;}
+.vscode-card-foot .vc-link:hover{text-decoration:underline;}
+.vscode-card-foot .vc-meta{font-size:12px;font-family:'IBM Plex Mono',monospace;color:var(--ph);}
 .roadmap-tile{background:var(--l01);border:1px solid var(--b00);padding:12px 16px;display:flex;flex-direction:column;gap:6px;}
 [data-theme="dark"] .roadmap-tile{border-color:transparent;}
 .roadmap-tile .rt-name{font-size:16px;font-weight:600;font-family:'IBM Plex Mono',monospace;color:var(--tp);}
@@ -134,27 +154,12 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--focus);outline-offs
     </div>
     <!-- Tab bar -->
     <div class="tab-bar">
-      <button class="tab-btn active" id="tabBtnPypi">PyPIStats</button>
-      <button class="tab-btn"        id="tabBtnPepy">Pepy</button>
+      <button class="tab-btn active" id="tabBtnPepy">Pepy</button>
+      <button class="tab-btn"        id="tabBtnPypi">PyPIStats</button>
     </div>
 
-    <!-- PyPIStats tab pane -->
-    <div class="tab-pane active" id="panePypi">
-      <div class="summary-panel">
-        <div class="summary-panel__title">Ecosystem overview · PyPIStats (without mirrors)</div>
-        <div class="summary-row">
-          <div class="summary-tile"><div class="label">Packages tracked</div><div class="value" id="sumPkgs">—</div></div>
-          <div class="summary-tile"><div class="label">Total all-time</div><div class="value" id="sumAllTime">—</div></div>
-          <div class="summary-tile"><div class="label">Last 30 days</div><div class="value" id="sumMonth">—</div></div>
-          <div class="summary-tile"><div class="label">Last 24 h</div><div class="value" id="sumDay">—</div></div>
-          <div class="summary-tile"><div class="label">Data source</div><div class="value small">pypistats.org</div></div>
-        </div>
-      </div>
-      <div class="card-grid" id="gridPypi"></div>
-    </div>
-
-    <!-- Pepy tab pane -->
-    <div class="tab-pane" id="panePepy">
+    <!-- Pepy tab pane (default) -->
+    <div class="tab-pane active" id="panePepy">
       <div class="summary-panel">
         <div class="summary-panel__title">Ecosystem overview · Pepy (including mirrors)</div>
         <div class="summary-row">
@@ -168,8 +173,48 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--focus);outline-offs
       <div class="card-grid" id="gridPepy"></div>
     </div>
 
+    <!-- PyPIStats tab pane -->
+    <div class="tab-pane" id="panePypi">
+      <div class="summary-panel">
+        <div class="summary-panel__title">Ecosystem overview · PyPIStats (without mirrors)</div>
+        <div class="summary-row">
+          <div class="summary-tile"><div class="label">Packages tracked</div><div class="value" id="sumPkgs">—</div></div>
+          <div class="summary-tile"><div class="label">Total all-time</div><div class="value" id="sumAllTime">—</div></div>
+          <div class="summary-tile"><div class="label">Last 30 days</div><div class="value" id="sumMonth">—</div></div>
+          <div class="summary-tile"><div class="label">Last 24 h</div><div class="value" id="sumDay">—</div></div>
+          <div class="summary-tile"><div class="label">Data source</div><div class="value small">pypistats.org</div></div>
+        </div>
+      </div>
+      <div class="card-grid" id="gridPypi"></div>
+    </div>
+
+    <div class="vscode-section-label">
+      <strong>VS Code Extension</strong>
+      <span>IBM Db2 Developer Extension downloads are static. Last updated: July 28, 2026</span>
+      <span class="snap-note">snapshot · 28 Jul 2025</span>
+    </div>
+    <div class="vscode-card">
+      <div class="vscode-card-head">
+        <div class="vc-publisher">IBM · v1.1.2</div>
+        <div class="vc-name">IBM.db2-for-luw</div>
+        <div class="vc-desc">Integrates Db2 database development directly into VS Code — manage connections, explore schemas, write and run SQL, all without switching tools. For Db2 Linux, Unix and Windows.</div>
+      </div>
+      <div class="vscode-card-stats">
+        <div><div class="slabel">Installs</div><div class="sval">3,358</div></div>
+        <div><div class="slabel">Updates</div><div class="sval">2,108</div></div>
+        <div><div class="slabel">Downloads</div><div class="sval">308</div></div>
+        <div><div class="slabel">Rating</div><div class="sval">5.0 ★</div></div>
+        <div><div class="slabel">Ratings count</div><div class="sval">3</div></div>
+      </div>
+      <div class="vscode-card-foot">
+        <span class="vc-meta">IBM Db2 Developer Extension · VS Code Marketplace</span>
+        <a class="vc-link" href="https://marketplace.visualstudio.com/items?itemName=IBM.db2-for-luw" target="_blank" rel="noopener">Marketplace ↗</a>
+      </div>
+    </div>
+
     <div class="roadmap-section-title">Connector Roadmap</div>
     <div class="roadmap-grid" id="roadmapGrid"></div>
+
     <div class="data-note">
       <span class="data-note__icon">ℹ</span>
       <span><strong>PyPIStats</strong> reports estimated end-user downloads by excluding known mirror downloads — providing a better measure of actual package adoption. <strong>Pepy</strong> reports total downloads including mirrors, so its counts are generally higher. All numbers on this dashboard come from PyPIStats.</span>
@@ -207,7 +252,7 @@ const PACKAGES = [
     pkg: "db2-sqlglot-dialect",
     framework: "SQLGlot",
     defn: "IBM Db2 dialect plugin for SQLGlot — transpile, parse, and generate Db2 SQL with full AST support, enabling SQLMesh and other SQLGlot-based tools to target Db2.",
-    pypi: "https://pypi.org/project/db2-sqlglot-dialect/",
+    pypi: "https://pypistats.org/packages/db2-sqlglot-dialect",
     pepy: "https://pepy.tech/projects/db2-sqlglot-dialect",
     version: "1.0.0",
     license: "Apache-2.0"
@@ -216,7 +261,7 @@ const PACKAGES = [
     pkg: "ibm-dbt-db2",
     framework: "dbt",
     defn: "IBM Db2 adapter for dbt-core — run dbt projects against IBM Db2 with full support for materializations, snapshots, seeds, incremental models, and schema introspection.",
-    pypi: "https://pypi.org/project/ibm-dbt-db2/",
+    pypi: "https://pypistats.org/packages/ibm-dbt-db2",
     pepy: "https://pepy.tech/projects/ibm-dbt-db2",
     version: "1.0.0",
     license: "Apache-2.0"
@@ -225,7 +270,7 @@ const PACKAGES = [
     pkg: "lfx-ibm",
     framework: "Langflow Db2 AI connector",
     defn: "Langflow component that connects IBM Db2 as a vector store, enabling AI-powered retrieval workflows inside Langflow pipelines.",
-    pypi: "https://pypi.org/project/lfx-ibm/",
+    pypi: "https://pypistats.org/packages/lfx-ibm",
     pepy: "https://pepy.tech/projects/lfx-ibm",
     version: "1.0.0",
     license: "Apache-2.0"
@@ -234,7 +279,7 @@ const PACKAGES = [
     pkg: "langchain-db2",
     framework: "LangChain Db2 connector",
     defn: "LangChain integration that exposes IBM Db2 as a vector store and document loader for building RAG and LLM-powered applications.",
-    pypi: "https://pypi.org/project/langchain-db2/",
+    pypi: "https://pypistats.org/packages/langchain-db2",
     pepy: "https://pepy.tech/projects/langchain-db2",
     version: "1.0.0",
     license: "Apache-2.0"
@@ -243,7 +288,7 @@ const PACKAGES = [
     pkg: "ibm-db-haystack",
     framework: "Haystack Db2 connector",
     defn: "Haystack document store backed by IBM Db2 — store, index, and retrieve documents for LLM pipelines using Db2 as the persistence layer.",
-    pypi: "https://pypi.org/project/ibm-db-haystack/",
+    pypi: "https://pypistats.org/packages/ibm-db-haystack",
     pepy: "https://pepy.tech/projects/ibm-db-haystack",
     version: "1.0.0",
     license: "Apache-2.0"
@@ -252,7 +297,7 @@ const PACKAGES = [
     pkg: "llama-index-vector-stores-db2",
     framework: "LlamaIndex Db2 connector",
     defn: "LlamaIndex vector store plugin for IBM Db2 — persist and query embeddings directly in Db2 for RAG and semantic search use cases.",
-    pypi: "https://pypi.org/project/llama-index-vector-stores-db2/",
+    pypi: "https://pypistats.org/packages/llama-index-vector-stores-db2",
     pepy: "https://pepy.tech/projects/llama-index-vector-stores-db2",
     version: "1.0.0",
     license: "Apache-2.0"
