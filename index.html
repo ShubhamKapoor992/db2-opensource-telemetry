@@ -191,7 +191,7 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--focus);outline-offs
     <div class="vscode-section-label">
       <strong>VS Code Extension</strong>
       <span>IBM Db2 Developer Extension downloads are static. Last updated: July 28, 2026</span>
-      <span class="snap-note">snapshot · 28 Jul 2025</span>
+      <span class="snap-note">snapshot · 28 Jul 2026</span>
     </div>
     <div class="vscode-card">
       <div class="vscode-card-head">
@@ -383,7 +383,6 @@ function buildPypiCard(p){
       <div><div class="slabel">All-time</div><div class="sval" id="stat-alltime-${id}">…</div></div>
       <div><div class="slabel">Last 30 days</div><div class="sval" id="stat-month-${id}">…</div></div>
       <div><div class="slabel">Last 24 h</div><div class="sval" id="stat-day-${id}">…</div></div>
-      <div><div class="slabel">Per second</div><div class="sval" id="stat-sec-${id}">…</div></div>
     </div>
     <div class="tile-chart-wrap">
       <div class="chart-type-bar">
@@ -433,7 +432,6 @@ function buildPepyCard(p){
       <div><div class="slabel">All-time</div><div class="sval" id="${id}-alltime">…</div></div>
       <div><div class="slabel">Last 30 days</div><div class="sval" id="${id}-month">…</div></div>
       <div><div class="slabel">Last 24 h</div><div class="sval" id="${id}-day">…</div></div>
-      <div><div class="slabel">Per second</div><div class="sval" id="${id}-sec">…</div></div>
     </div>
     <div class="tile-chart-wrap">
       <div class="chart-type-bar">
@@ -517,13 +515,12 @@ function clearErrorChart(pkg){
   if(err) err.style.display='none';
 }
 
-function setStats(pkg, allTime, month, day, perSec){
+function setStats(pkg, allTime, month, day){
   const at=document.getElementById('stat-alltime-'+pkg), mo=document.getElementById('stat-month-'+pkg);
-  const dy=document.getElementById('stat-day-'+pkg), ps=document.getElementById('stat-sec-'+pkg);
+  const dy=document.getElementById('stat-day-'+pkg);
   if(at) at.textContent=fmtK(allTime);
   if(mo) mo.textContent=fmt(month);
   if(dy) dy.textContent=day===0?'0':fmt(day);
-  if(ps) ps.textContent=perSec!=null?perSec:'—';
 }
 
 // Repaint all card stat tiles + both summary panels.
@@ -532,10 +529,7 @@ function applyMode(){
 
   // ── PyPIStats cards ────────────────────────────────────────────────────
   pkgs.forEach(d => {
-    const perSec = d.recent.last_day > 0
-      ? (d.recent.last_day / 86400).toFixed(5) + '/s'
-      : '<0.01/s';
-    setStats(d.pkg, d.allTime, d.recent.last_month, d.recent.last_day, perSec);
+    setStats(d.pkg, d.allTime, d.recent.last_month, d.recent.last_day);
   });
 
   // ── PyPIStats summary panel ────────────────────────────────────────────
@@ -545,18 +539,13 @@ function applyMode(){
 
   // ── Pepy cards ─────────────────────────────────────────────────────────
   pkgs.forEach(d => {
-    const id     = 'pepy-' + d.pkg;
-    const perSec = d.pepyLastDay > 0
-      ? (d.pepyLastDay / 86400).toFixed(5) + '/s'
-      : '<0.01/s';
+    const id    = 'pepy-' + d.pkg;
     const atEl  = document.getElementById(id + '-alltime');
     const moEl  = document.getElementById(id + '-month');
     const dyEl  = document.getElementById(id + '-day');
-    const psEl  = document.getElementById(id + '-sec');
     if(atEl) atEl.textContent = d.pepyAllTime   != null ? fmtK(d.pepyAllTime)   : '—';
     if(moEl) moEl.textContent = d.pepyLastMonth != null ? fmt(d.pepyLastMonth)  : '—';
     if(dyEl) dyEl.textContent = d.pepyLastDay   != null ? fmt(d.pepyLastDay)    : '—';
-    if(psEl) psEl.textContent = d.pepyLastDay   != null ? perSec                : '—';
   });
 
   // ── Pepy summary panel ─────────────────────────────────────────────────
