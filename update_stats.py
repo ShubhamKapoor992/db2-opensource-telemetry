@@ -21,7 +21,7 @@ PACKAGES = [
         "framework": "LangChain Db2 connector"
     },
     {
-        "name": "lbm-db-haystack",
+        "name": "ibm-db-haystack",
         "framework": "Haystack Db2 connector"
     },
     {
