@@ -1,6 +1,165 @@
 {
-  "generated": "2026-07-28T09:58:01.401745",
+  "generated": "2026-07-28T10:27:52.174913+00:00",
   "packages": [
+    {
+      "package": "db2-sqlglot-dialect",
+      "framework": "SQLGlot",
+      "all_time": 457,
+      "last_month": 261,
+      "last_day": 19,
+      "series": [
+        {
+          "category": "without_mirrors",
+          "date": "2026-06-24",
+          "downloads": 182
+        },
+        {
+          "category": "without_mirrors",
+          "date": "2026-06-25",
+          "downloads": 6
+        },
+        {
+          "category": "without_mirrors",
+          "date": "2026-06-26",
+          "downloads": 4
+        },
+        {
+          "category": "without_mirrors",
+          "date": "2026-06-27",
+          "downloads": 4
+        },
+        {
+          "category": "without_mirrors",
+          "date": "2026-06-29",
+          "downloads": 1
+        },
+        {
+          "category": "without_mirrors",
+          "date": "2026-06-30",
+          "downloads": 10
+        },
+        {
+          "category": "without_mirrors",
+          "date": "2026-07-01",
+          "downloads": 2
+        },
+        {
+          "category": "without_mirrors",
+          "date": "2026-07-02",
+          "downloads": 8
+        },
+        {
+          "category": "without_mirrors",
+          "date": "2026-07-03",
+          "downloads": 14
+        },
+        {
+          "category": "without_mirrors",
+          "date": "2026-07-04",
+          "downloads": 2
+        },
+        {
+          "category": "without_mirrors",
+          "date": "2026-07-07",
+          "downloads": 7
+        },
+        {
+          "category": "without_mirrors",
+          "date": "2026-07-08",
+          "downloads": 4
+        },
+        {
+          "category": "without_mirrors",
+          "date": "2026-07-09",
+          "downloads": 9
+        },
+        {
+          "category": "without_mirrors",
+          "date": "2026-07-10",
+          "downloads": 28
+        },
+        {
+          "category": "without_mirrors",
+          "date": "2026-07-11",
+          "downloads": 5
+        },
+        {
+          "category": "without_mirrors",
+          "date": "2026-07-12",
+          "downloads": 36
+        },
+        {
+          "category": "without_mirrors",
+          "date": "2026-07-13",
+          "downloads": 48
+        },
+        {
+          "category": "without_mirrors",
+          "date": "2026-07-14",
+          "downloads": 11
+        },
+        {
+          "category": "without_mirrors",
+          "date": "2026-07-15",
+          "downloads": 2
+        },
+        {
+          "category": "without_mirrors",
+          "date": "2026-07-16",
+          "downloads": 13
+        },
+        {
+          "category": "without_mirrors",
+          "date": "2026-07-17",
+          "downloads": 5
+        },
+        {
+          "category": "without_mirrors",
+          "date": "2026-07-18",
+          "downloads": 2
+        },
+        {
+          "category": "without_mirrors",
+          "date": "2026-07-20",
+          "downloads": 1
+        },
+        {
+          "category": "without_mirrors",
+          "date": "2026-07-21",
+          "downloads": 2
+        },
+        {
+          "category": "without_mirrors",
+          "date": "2026-07-22",
+          "downloads": 1
+        },
+        {
+          "category": "without_mirrors",
+          "date": "2026-07-23",
+          "downloads": 9
+        },
+        {
+          "category": "without_mirrors",
+          "date": "2026-07-24",
+          "downloads": 7
+        },
+        {
+          "category": "without_mirrors",
+          "date": "2026-07-25",
+          "downloads": 8
+        },
+        {
+          "category": "without_mirrors",
+          "date": "2026-07-26",
+          "downloads": 7
+        },
+        {
+          "category": "without_mirrors",
+          "date": "2026-07-27",
+          "downloads": 19
+        }
+      ]
+    },
     {
       "package": "ibm-dbt-db2",
       "framework": "dbt",
