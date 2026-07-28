@@ -36,8 +36,8 @@ PYPISTATS_HEADERS = {
 }
 
 PEPY_HEADERS = {
-    "Accept": "application/json",
-    "X-Api-Key": "CLNCvUFl8juaVTabc1TWzm9lYJZxmRqLLey"
+    "Accept":    "application/json",
+    "X-Api-Key": "CLNCvUFl8juaVTabc1TWzm9lYJZxmRqL"
 }
 
 SLEEP_BETWEEN_CALLS = 0     # TEST MODE — set to 60 for production
@@ -148,18 +148,40 @@ for pkg in PACKAGES:
     print(f"\n  [Tab 2 · Pepy] Fetching: {name}")
     pepy_url = f"https://api.pepy.tech/api/v2/projects/{name}"
     print(f"  Source: {pepy_url}")
-    print(f"  → GET {pepy_url}")
+    print(f"  → GET {pepy_url}  (X-Api-Key header included)")
 
-    pepy_total  = None
-    pepy_unique = None
+    pepy_all_time   = None
+    pepy_last_month = None
+    pepy_last_day   = None
+    pepy_series     = []
     try:
         pepy_resp = requests.get(pepy_url, headers=PEPY_HEADERS, timeout=15)
         print(f"  [Pepy/{name}] Status: {pepy_resp.status_code}")
         if pepy_resp.ok:
-            pepy_data   = pepy_resp.json()
-            pepy_total  = pepy_data.get("total_downloads")
-            pepy_unique = pepy_data.get("total_unique_downloads")
-            print(f"  [Pepy/{name}] ✓ total={pepy_total}  unique={pepy_unique}")
+            pepy_data     = pepy_resp.json()
+
+            # total_downloads = all-time
+            pepy_all_time = pepy_data.get("total_downloads")
+
+            # downloads = { "YYYY-MM-DD": { "version": count, ... } }
+            raw_dl = pepy_data.get("downloads") or {}
+
+            # Build daily series: sum all versions per day, sort ascending by date
+            pepy_series = sorted(
+                [
+                    {"date": d, "downloads": sum(v for v in versions.values())}
+                    for d, versions in raw_dl.items()
+                ],
+                key=lambda x: x["date"]
+            )
+
+            # last_day   = most recent day's total
+            # last_month = sum of last 30 days
+            if pepy_series:
+                pepy_last_day   = pepy_series[-1]["downloads"]
+                pepy_last_month = sum(e["downloads"] for e in pepy_series[-30:])
+
+            print(f"  [Pepy/{name}] ✓ all_time={pepy_all_time}  last_month={pepy_last_month}  last_day={pepy_last_day}  series_days={len(pepy_series)}")
         else:
             print(f"  [Pepy/{name}] HTTP {pepy_resp.status_code} — data unavailable")
     except Exception as exc:
@@ -169,21 +191,23 @@ for pkg in PACKAGES:
     result.append({
         "package":   name,
         "framework": pkg["framework"],
-        # Tab 1 · PyPIStats fields
+        # Tab 1 · PyPIStats (excludes mirror downloads)
         "pypistats": {
             "all_time":   all_time,
             "last_month": last_month,
             "last_day":   last_day,
             "series":     series
         },
-        # Tab 2 · Pepy fields
+        # Tab 2 · Pepy (includes mirror downloads)
         "pepy": {
-            "total":  pepy_total,
-            "unique": pepy_unique
+            "all_time":   pepy_all_time,
+            "last_month": pepy_last_month,
+            "last_day":   pepy_last_day,
+            "series":     pepy_series
         }
     })
 
-    print(f"\n  Saved to stats.json → pypistats.all_time={all_time} | pepy.total={pepy_total}")
+    print(f"\n  Saved to stats.json → pypistats.all_time={all_time} | pepy.all_time={pepy_all_time}")
 
 with open("stats.json", "w") as f:
     json.dump(
@@ -198,5 +222,5 @@ with open("stats.json", "w") as f:
 print(f"\n{'='*60}")
 print(f"Done. Wrote {len(result)}/{len(PACKAGES)} packages to stats.json")
 print(f"  Tab 1 (PyPIStats) fields: all_time, last_month, last_day, series")
-print(f"  Tab 2 (Pepy)      fields: total, unique")
+print(f"  Tab 2 (Pepy)      fields: all_time, last_month, last_day, series")
 print(f"{'='*60}")

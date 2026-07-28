@@ -159,8 +159,9 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--focus);outline-offs
         <div class="summary-panel__title">Ecosystem overview · Pepy (including mirrors)</div>
         <div class="summary-row">
           <div class="summary-tile"><div class="label">Packages tracked</div><div class="value" id="pepySumPkgs">—</div></div>
-          <div class="summary-tile"><div class="label">Total Downloads</div><div class="value" id="pepySumTotal">—</div></div>
-          <div class="summary-tile"><div class="label">Unique Downloads</div><div class="value" id="pepySumUnique">—</div></div>
+          <div class="summary-tile"><div class="label">Total all-time</div><div class="value" id="pepySumAllTime">—</div></div>
+          <div class="summary-tile"><div class="label">Last 30 days</div><div class="value" id="pepySumMonth">—</div></div>
+          <div class="summary-tile"><div class="label">Last 24 h</div><div class="value" id="pepySumDay">—</div></div>
           <div class="summary-tile"><div class="label">Data source</div><div class="value small">pepy.tech</div></div>
         </div>
       </div>
@@ -374,6 +375,7 @@ function buildPypiCard(p){
 // ── Pepy card ─────────────────────────────────────────────────────────────
 function buildPepyCard(p){
   const id = 'pepy-' + p.pkg;
+  tileChartType[id] = 'line';
   const el = document.createElement('div');
   el.className = 'tile';
   el.innerHTML = `
@@ -383,13 +385,35 @@ function buildPepyCard(p){
       <div class="defn">${p.defn}</div>
     </div>
     <div class="tile-stats">
-      <div><div class="slabel">Total Downloads</div><div class="sval" id="${id}-total">…</div></div>
-      <div><div class="slabel">Unique Downloads</div><div class="sval" id="${id}-unique">…</div></div>
+      <div><div class="slabel">All-time</div><div class="sval" id="${id}-alltime">…</div></div>
+      <div><div class="slabel">Last 30 days</div><div class="sval" id="${id}-month">…</div></div>
+      <div><div class="slabel">Last 24 h</div><div class="sval" id="${id}-day">…</div></div>
+      <div><div class="slabel">Per second</div><div class="sval" id="${id}-sec">…</div></div>
+    </div>
+    <div class="tile-chart-wrap">
+      <div class="chart-type-bar">
+        <button class="ct-btn active" data-pkg="${id}" data-type="line">Line</button>
+        <button class="ct-btn" data-pkg="${id}" data-type="bar">Bar</button>
+        <button class="ct-btn" data-pkg="${id}" data-type="area">Area</button>
+      </div>
+      <div class="tile-chart" id="chartbox-${id}">
+        <canvas id="spark-${id}"></canvas>
+        <div class="chart-err" id="err-${id}">chart unavailable</div>
+      </div>
     </div>
     <div class="tile-foot">
-      <span style="font-size:12px;font-family:'IBM Plex Mono',monospace;color:var(--ph);">Includes mirror downloads</span>
+      <span class="snap-badge">Includes mirror downloads</span>
       <a class="pypi-link" href="${p.pepy}" target="_blank" rel="noopener">pepy.tech ↗</a>
     </div>`;
+  el.querySelectorAll('.ct-btn').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      const pkg = btn.dataset.pkg, type = btn.dataset.type;
+      tileChartType[pkg] = type;
+      el.querySelectorAll('.ct-btn').forEach(b => b.classList.toggle('active', b.dataset.type === type));
+      redrawTileChart(pkg);
+    });
+  });
   return el;
 }
 
@@ -470,21 +494,30 @@ function applyMode(){
   });
 
   // ── PyPIStats summary panel ────────────────────────────────────────────
-  document.getElementById('sumAllTime').textContent = fmtK(pkgs.reduce((s,d) => s + (d.allTime            || 0), 0));
-  document.getElementById('sumMonth').textContent   = fmt( pkgs.reduce((s,d) => s + (d.recent.last_month  || 0), 0));
-  document.getElementById('sumDay').textContent     = fmt( pkgs.reduce((s,d) => s + (d.recent.last_day    || 0), 0));
+  document.getElementById('sumAllTime').textContent = fmtK(pkgs.reduce((s,d) => s + (d.allTime           || 0), 0));
+  document.getElementById('sumMonth').textContent   = fmt( pkgs.reduce((s,d) => s + (d.recent.last_month || 0), 0));
+  document.getElementById('sumDay').textContent     = fmt( pkgs.reduce((s,d) => s + (d.recent.last_day   || 0), 0));
 
   // ── Pepy cards ─────────────────────────────────────────────────────────
   pkgs.forEach(d => {
-    const totalEl  = document.getElementById('pepy-' + d.pkg + '-total');
-    const uniqueEl = document.getElementById('pepy-' + d.pkg + '-unique');
-    if(totalEl)  totalEl.textContent  = d.pepyTotal  != null ? fmtK(d.pepyTotal)  : '—';
-    if(uniqueEl) uniqueEl.textContent = d.pepyUnique != null ? fmtK(d.pepyUnique) : '—';
+    const id     = 'pepy-' + d.pkg;
+    const perSec = d.pepyLastDay > 0
+      ? (d.pepyLastDay / 86400).toFixed(5) + '/s'
+      : '<0.01/s';
+    const atEl  = document.getElementById(id + '-alltime');
+    const moEl  = document.getElementById(id + '-month');
+    const dyEl  = document.getElementById(id + '-day');
+    const psEl  = document.getElementById(id + '-sec');
+    if(atEl) atEl.textContent = d.pepyAllTime   != null ? fmtK(d.pepyAllTime)   : '—';
+    if(moEl) moEl.textContent = d.pepyLastMonth != null ? fmt(d.pepyLastMonth)  : '—';
+    if(dyEl) dyEl.textContent = d.pepyLastDay   != null ? fmt(d.pepyLastDay)    : '—';
+    if(psEl) psEl.textContent = d.pepyLastDay   != null ? perSec                : '—';
   });
 
   // ── Pepy summary panel ─────────────────────────────────────────────────
-  document.getElementById('pepySumTotal').textContent  = fmtK(pkgs.reduce((s,d) => s + (d.pepyTotal  || 0), 0));
-  document.getElementById('pepySumUnique').textContent = fmtK(pkgs.reduce((s,d) => s + (d.pepyUnique || 0), 0));
+  document.getElementById('pepySumAllTime').textContent = fmtK(pkgs.reduce((s,d) => s + (d.pepyAllTime   || 0), 0));
+  document.getElementById('pepySumMonth').textContent   = fmt( pkgs.reduce((s,d) => s + (d.pepyLastMonth || 0), 0));
+  document.getElementById('pepySumDay').textContent     = fmt( pkgs.reduce((s,d) => s + (d.pepyLastDay   || 0), 0));
 }
 
 // ---- Load from stats.json (same-origin, no CORS) ----
@@ -496,28 +529,42 @@ async function loadData(){
   const stats = await response.json();
 
   // Store all data and paint cards
-  // stats.json shape (Tab 1 source: pypistats, Tab 2 source: pepy):
-  //   entry.pypistats.{ all_time, last_month, last_day, series[] }
-  //   entry.pepy.{     total, unique }
+  // stats.json shape:
+  //   entry.pypistats.{ all_time, last_month, last_day, series[] }  → Tab 1
+  //   entry.pepy.{     all_time, last_month, last_day, series[] }   → Tab 2
   stats.packages.forEach(entry => {
     const p = PACKAGES.find(x => x.pkg === entry.package);
     if(!p) return;
 
-    const ps     = entry.pypistats || {};   // Tab 1 · PyPIStats
-    const pepy   = entry.pepy      || {};   // Tab 2 · Pepy
-    const series = (ps.series || []).sort((a,b) => new Date(a.date) - new Date(b.date));
+    const ps   = entry.pypistats || {};
+    const pepy = entry.pepy      || {};
+
+    const series     = (ps.series   || []).sort((a,b) => new Date(a.date) - new Date(b.date));
+    const pepySeries = (pepy.series || []).sort((a,b) => new Date(a.date) - new Date(b.date));
 
     DATA[p.pkg] = {
-      pkg:        p.pkg,
-      recent:     { last_day: ps.last_day, last_month: ps.last_month },
+      pkg:           p.pkg,
+      // Tab 1 · PyPIStats
+      recent:        { last_day: ps.last_day, last_month: ps.last_month },
       series,
-      allTime:    ps.all_time   ?? null,
-      pepyTotal:  pepy.total    ?? null,
-      pepyUnique: pepy.unique   ?? null
+      allTime:       ps.all_time     ?? null,
+      // Tab 2 · Pepy
+      pepySeries,
+      pepyAllTime:   pepy.all_time   ?? null,
+      pepyLastMonth: pepy.last_month ?? null,
+      pepyLastDay:   pepy.last_day   ?? null
     };
 
+    // PyPIStats sparkline
     clearErrorChart(p.pkg);
     renderTimeChart(p.pkg, series.length ? series : [{date:'', downloads:0}]);
+
+    // Pepy sparkline
+    const pepyId = 'pepy-' + p.pkg;
+    if(document.getElementById('spark-' + pepyId)){
+      tileChartType[pepyId] = tileChartType[pepyId] || 'line';
+      renderTimeChart(pepyId, pepySeries.length ? pepySeries : [{date:'', downloads:0}]);
+    }
 
     const tag = document.getElementById('snaptag-' + p.pkg);
     if(tag) tag.style.display = 'none';
