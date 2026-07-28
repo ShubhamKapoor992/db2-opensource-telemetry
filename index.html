@@ -183,55 +183,37 @@ const PACKAGES = [
     pepy: "https://pepy.tech/projects/ibm-dbt-db2",
     version: "1.0.0",
     license: "Apache-2.0"
-  },
-  {
-    pkg: "ibm-airflow-provider-db2",
-    framework: "Airflow",
-    defn: "Native IBM Db2 provider for Apache Airflow — Db2Hook, Db2Operator, and connection-type support for ETL pipeline orchestration.",
-    pypi: "https://pypi.org/project/ibm-airflow-provider-db2/",
-    pepy: "https://pepy.tech/projects/ibm-airflow-provider-db2",
-    version: "1.0.0",
-    license: "Apache-2.0"
-  },
-  {
-    pkg: "ibis-db2",
-    framework: "Ibis",
-    defn: "IBM Db2 backend for Ibis — the portable Python dataframe library — enabling dialect-independent analytics SQL execution against Db2.",
-    pypi: "https://pypi.org/project/ibis-db2/",
-    pepy: "https://pepy.tech/projects/ibis-db2",
-    version: "1.0.0",
-    license: "Apache-2.0"
   }
 ];
 
 const ROADMAP = [
   {
     framework: "Apache Airflow",
-    status: "in-progress",
-    statusLabel: "In Progress",
+    status: "approved",
+    statusLabel: "PR Approved",
     desc: "Native IBM Db2 provider for Apache Airflow — Db2Hook, Db2Operator, and connection-type support for ETL pipeline orchestration.",
-    note: "Development in progress"
+    note: "Following merge process"
   },
   {
     framework: "Ibis",
-    status: "planned",
-    statusLabel: "Planned",
+    status: "in-progress",
+    statusLabel: "PR Raised",
     desc: "IBM Db2 backend for Ibis — the portable Python dataframe library — enabling dialect-independent analytics SQL execution against Db2.",
-    note: "Scoping · Q4 2026"
+    note: "PR raised · pending review"
   },
   {
     framework: "SQLMesh",
     status: "in-progress",
-    statusLabel: "In Progress · Beta",
+    statusLabel: "QA in Progress",
     desc: "IBM Db2 engine adapter for SQLMesh — full support for virtual data environments, incremental models, snapshots, and automated plan/apply against Db2.",
-    note: "Beta · active development"
+    note: "QA in progress"
   },
   {
     framework: "Apache Arrow",
-    status: "planned",
-    statusLabel: "Planned",
+    status: "yellow",
+    statusLabel: "Code in Review",
     desc: "ADBC (Arrow Database Connectivity) driver for IBM Db2 — zero-copy columnar data exchange between Db2 and the Apache Arrow ecosystem.",
-    note: "Scoping · 2026"
+    note: "Code review in progress"
   }
 ];
 
@@ -365,7 +347,7 @@ async function loadData(){
   document.getElementById('statusDot').className = 'status-dot wait';
   document.getElementById('statusText').textContent = 'Loading…';
 
-  const response = await fetch("stats.json");
+  const response = await fetch("stats.json?t=" + Date.now());
   const stats = await response.json();
 
   // Paint each package whose data is present in stats.json
@@ -402,10 +384,15 @@ async function loadData(){
   document.getElementById('sumMonth').textContent    = fmt( allPkgs.reduce((s,p) => s + (p.last_month || 0), 0));
   document.getElementById('sumDay').textContent      = fmt( allPkgs.reduce((s,p) => s + (p.last_day   || 0), 0));
 
-  // Status bar: show stats.generated
-  const generated = stats.generated ? new Date(stats.generated) : null;
+  // Status bar: show stats.generated converted to IST (UTC+5:30)
+  const generated = stats.generated ? new Date(stats.generated + 'Z') : null;
   const updatedStr = generated
-    ? generated.toLocaleString('en-US', { month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' }) + ' UTC'
+    ? generated.toLocaleString('en-IN', {
+        timeZone: 'Asia/Kolkata',
+        month: 'short', day: 'numeric',
+        hour: '2-digit', minute: '2-digit',
+        hour12: true
+      }) + ' IST'
     : '';
   document.getElementById('statusDot').className     = 'status-dot';
   document.getElementById('statusText').textContent  = 'Updated: ' + updatedStr;
@@ -416,6 +403,8 @@ async function loadData(){
   if(footer) footer.textContent = updatedStr ? 'Updated ' + updatedStr : '';
 }
 
+// Refresh re-fetches stats.json bypassing the browser cache so the
+// button always loads the latest file written by the GitHub Action.
 async function refresh(){
   await loadData();
 }
