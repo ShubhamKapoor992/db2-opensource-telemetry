@@ -392,7 +392,7 @@ async function loadData(){
   document.getElementById('sumDay').textContent      = fmt( allPkgs.reduce((s,p) => s + (p.last_day   || 0), 0));
 
   // Status bar: show stats.generated converted to IST (UTC+5:30)
-  const generated = stats.generated ? new Date(stats.generated + 'Z') : null;
+  const generated = stats.generated ? new Date(stats.generated) : null;
   const updatedStr = generated
     ? generated.toLocaleString('en-IN', {
         timeZone: 'Asia/Kolkata',
