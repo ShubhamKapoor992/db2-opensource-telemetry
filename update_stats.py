@@ -30,13 +30,18 @@ PACKAGES = [
     }
 ]
 
-HEADERS = {
+PYPISTATS_HEADERS = {
     "Accept": "application/json",
     "User-Agent": "db2-opensource-telemetry/1.0 (+https://github.com/ShubhamKapoor992/db2-opensource-telemetry)"
 }
 
-SLEEP_BETWEEN_CALLS = 35   # seconds to wait before every API call
-SLEEP_ON_RATE_LIMIT = 60   # extra seconds to wait after a 429 before retrying
+PEPY_HEADERS = {
+    "Accept": "application/json",
+    "X-Api-Key": "CLNCvUFl8juaVTabc1TWzm9lYJZxmRqLLey"
+}
+
+SLEEP_BETWEEN_CALLS = 0     # TEST MODE — set to 60 for production
+SLEEP_ON_RATE_LIMIT = 0     # TEST MODE — set to 120 for production
 
 # Track whether this is the very first call so we don't sleep before it
 _first_call = True
@@ -45,22 +50,26 @@ _first_call = True
 def get_json(url, pkg_name):
     """Fetch URL and return parsed JSON, or None on any error.
 
-    Sleeps SLEEP_BETWEEN_CALLS seconds before every call (except the first).
-    On a 429 response, waits an additional SLEEP_ON_RATE_LIMIT seconds then
-    retries exactly once.
+    Sleeps SLEEP_BETWEEN_CALLS seconds before every call (except the first
+    call ever, and except after a 429 retry — the backoff already covers it).
+    On a 429 response, waits SLEEP_ON_RATE_LIMIT seconds then retries once.
     """
     global _first_call
+    is_retry = False
 
     for attempt in (1, 2):
-        # Always sleep before making a request (skip only before the very first call)
+        # Sleep before the call — skip before the very first call ever,
+        # and skip on a retry (the 429 backoff sleep already ran).
         if _first_call:
             _first_call = False
-        else:
+        elif not is_retry:
             print(f"  Sleeping {SLEEP_BETWEEN_CALLS}s before next call …")
             time.sleep(SLEEP_BETWEEN_CALLS)
 
+        is_retry = False  # reset for next iteration
+
         try:
-            resp = requests.get(url, headers=HEADERS, timeout=15)
+            resp = requests.get(url, headers=PYPISTATS_HEADERS, timeout=15)
         except requests.RequestException as exc:
             print(f"  [{pkg_name}] network error: {exc}")
             return None
@@ -73,6 +82,7 @@ def get_json(url, pkg_name):
             if attempt == 1:
                 print(f"  [{pkg_name}] rate-limited (429) — sleeping {SLEEP_ON_RATE_LIMIT}s then retrying …")
                 time.sleep(SLEEP_ON_RATE_LIMIT)
+                is_retry = True
                 continue
             else:
                 print(f"  [{pkg_name}] rate-limited (429) again after retry — skipping")
@@ -127,13 +137,35 @@ for pkg in PACKAGES:
 
     all_time = sum(x["downloads"] for x in series)
 
+    # ── Pepy: total + unique downloads ──────────────────────────────────────
+    pepy_total = None
+    pepy_unique = None
+    try:
+        pepy_resp = requests.get(
+            f"https://api.pepy.tech/api/v2/projects/{name}",
+            headers=PEPY_HEADERS,
+            timeout=15
+        )
+        print(f"  [pepy/{name}] Status: {pepy_resp.status_code}")
+        if pepy_resp.ok:
+            pepy_data = pepy_resp.json()
+            pepy_total  = pepy_data.get("total_downloads")
+            pepy_unique = pepy_data.get("total_unique_downloads")
+            print(f"  [pepy/{name}] total={pepy_total}  unique={pepy_unique}")
+        else:
+            print(f"  [pepy/{name}] HTTP {pepy_resp.status_code} — pepy data unavailable")
+    except Exception as exc:
+        print(f"  [pepy/{name}] error: {exc}")
+
     result.append({
         "package": name,
         "framework": pkg["framework"],
         "all_time": all_time,
         "last_month": recent_data["data"]["last_month"],
         "last_day": recent_data["data"]["last_day"],
-        "series": series
+        "series": series,
+        "pepy_total": pepy_total,
+        "pepy_unique": pepy_unique
     })
 
     print(f"  [{name}] all-time={all_time}  last_month={recent_data['data']['last_month']}  last_day={recent_data['data']['last_day']}")

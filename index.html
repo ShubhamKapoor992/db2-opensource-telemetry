@@ -87,6 +87,11 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--focus);outline-offs
 .roadmap-tile .rt-name{font-size:16px;font-weight:600;font-family:'IBM Plex Mono',monospace;color:var(--tp);}
 .roadmap-tile .rt-desc{font-size:13px;line-height:20px;color:var(--ts);}
 .roadmap-tile .rt-note{font-size:12px;font-family:'IBM Plex Mono',monospace;color:var(--ph);}
+.tab-bar{display:flex;border-bottom:2px solid var(--b00);margin-bottom:12px;gap:0;}
+.tab-btn{background:none;border:none;border-bottom:2px solid transparent;margin-bottom:-2px;padding:8px 20px;font-size:13px;font-weight:600;color:var(--ts);cursor:pointer;font-family:-apple-system,"Segoe UI",system-ui,sans-serif;transition:color .15s;}
+.tab-btn:hover{color:var(--tp);}
+.tab-btn.active{color:var(--ia);border-bottom-color:var(--ia);}
+.tab-pane{display:none;}.tab-pane.active{display:block;}
 .data-note{display:flex;align-items:flex-start;gap:8px;margin-top:14px;padding:10px 14px;background:var(--l01);border:1px solid var(--b00);font-size:12px;line-height:1.6;color:var(--ts);}
 .data-note__icon{flex-shrink:0;font-size:13px;color:var(--ph);margin-top:1px;}
 .data-note strong{color:var(--tp);}
@@ -127,17 +132,41 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--focus);outline-offs
       <h1>Db2 Ecosystem — Download Telemetry</h1>
       <p>Community-built Db2 packages for SQLGlot and dbt. Data refreshed hourly.</p>
     </div>
-    <div class="summary-panel">
-      <div class="summary-panel__title">Ecosystem overview</div>
-      <div class="summary-row">
-        <div class="summary-tile"><div class="label">Packages tracked</div><div class="value" id="sumPkgs">—</div></div>
-        <div class="summary-tile"><div class="label">Total all-time</div><div class="value" id="sumAllTime">—</div></div>
-        <div class="summary-tile"><div class="label">Last 30 days</div><div class="value" id="sumMonth">—</div></div>
-        <div class="summary-tile"><div class="label">Last 24 h</div><div class="value" id="sumDay">—</div></div>
-        <div class="summary-tile"><div class="label">Data source</div><div class="value small">pypistats.org</div></div>
-      </div>
+    <!-- Tab bar -->
+    <div class="tab-bar">
+      <button class="tab-btn active" id="tabBtnPypi">PyPIStats</button>
+      <button class="tab-btn"        id="tabBtnPepy">Pepy</button>
     </div>
-    <div class="card-grid" id="grid"></div>
+
+    <!-- PyPIStats tab pane -->
+    <div class="tab-pane active" id="panePypi">
+      <div class="summary-panel">
+        <div class="summary-panel__title">Ecosystem overview · PyPIStats (without mirrors)</div>
+        <div class="summary-row">
+          <div class="summary-tile"><div class="label">Packages tracked</div><div class="value" id="sumPkgs">—</div></div>
+          <div class="summary-tile"><div class="label">Total all-time</div><div class="value" id="sumAllTime">—</div></div>
+          <div class="summary-tile"><div class="label">Last 30 days</div><div class="value" id="sumMonth">—</div></div>
+          <div class="summary-tile"><div class="label">Last 24 h</div><div class="value" id="sumDay">—</div></div>
+          <div class="summary-tile"><div class="label">Data source</div><div class="value small">pypistats.org</div></div>
+        </div>
+      </div>
+      <div class="card-grid" id="gridPypi"></div>
+    </div>
+
+    <!-- Pepy tab pane -->
+    <div class="tab-pane" id="panePepy">
+      <div class="summary-panel">
+        <div class="summary-panel__title">Ecosystem overview · Pepy (including mirrors)</div>
+        <div class="summary-row">
+          <div class="summary-tile"><div class="label">Packages tracked</div><div class="value" id="pepySumPkgs">—</div></div>
+          <div class="summary-tile"><div class="label">Total Downloads</div><div class="value" id="pepySumTotal">—</div></div>
+          <div class="summary-tile"><div class="label">Unique Downloads</div><div class="value" id="pepySumUnique">—</div></div>
+          <div class="summary-tile"><div class="label">Data source</div><div class="value small">pepy.tech</div></div>
+        </div>
+      </div>
+      <div class="card-grid" id="gridPepy"></div>
+    </div>
+
     <div class="roadmap-section-title">Connector Roadmap</div>
     <div class="roadmap-grid" id="roadmapGrid"></div>
     <div class="data-note">
@@ -210,11 +239,11 @@ const PACKAGES = [
     license: "Apache-2.0"
   },
   {
-    pkg: "lbm-db-haystack",
+    pkg: "ibm-db-haystack",
     framework: "Haystack Db2 connector",
     defn: "Haystack document store backed by IBM Db2 — store, index, and retrieve documents for LLM pipelines using Db2 as the persistence layer.",
-    pypi: "https://pypi.org/project/lbm-db-haystack/",
-    pepy: "https://pepy.tech/projects/lbm-db-haystack",
+    pypi: "https://pypi.org/project/ibm-db-haystack/",
+    pepy: "https://pepy.tech/projects/ibm-db-haystack",
     version: "1.0.0",
     license: "Apache-2.0"
   },
@@ -291,7 +320,8 @@ const DATA = {};
 function fmt(n){ if(n===null||n===undefined||isNaN(n)) return "—"; return n.toLocaleString('en-US'); }
 function fmtK(n){ if(n===null||n===undefined||isNaN(n)) return "—"; if(n>=1000) return (n/1000).toFixed(1).replace(/\.0$/,'')+'k'; return String(n); }
 
-function buildCard(p){
+// ── PyPIStats card ────────────────────────────────────────────────────────
+function buildPypiCard(p){
   const id = p.pkg;
   tileChartType[id] = 'line';
   const el = document.createElement('div');
@@ -324,7 +354,6 @@ function buildCard(p){
     <div class="tile-foot">
       <span class="snap-badge" id="snapbadge-${id}"></span>
       <div style="display:flex;gap:10px;align-items:center;">
-        <a class="pypi-link" href="${p.pepy}" target="_blank" rel="noopener">pepy.tech ↗</a>
         <a class="pypi-link" href="${p.pypi}" target="_blank" rel="noopener">PyPI ↗</a>
       </div>
     </div>`;
@@ -339,6 +368,28 @@ function buildCard(p){
   });
   el.querySelector('#expand-'+id).addEventListener('click', e=>{e.stopPropagation();expandChart(id);});
   el.querySelector('#chartbox-'+id).addEventListener('click', ()=>expandChart(id));
+  return el;
+}
+
+// ── Pepy card ─────────────────────────────────────────────────────────────
+function buildPepyCard(p){
+  const id = 'pepy-' + p.pkg;
+  const el = document.createElement('div');
+  el.className = 'tile';
+  el.innerHTML = `
+    <div class="tile-head">
+      <span class="cds-tag">${p.framework}</span>
+      <div class="pkgname">${p.pkg}</div>
+      <div class="defn">${p.defn}</div>
+    </div>
+    <div class="tile-stats">
+      <div><div class="slabel">Total Downloads</div><div class="sval" id="${id}-total">…</div></div>
+      <div><div class="slabel">Unique Downloads</div><div class="sval" id="${id}-unique">…</div></div>
+    </div>
+    <div class="tile-foot">
+      <span style="font-size:12px;font-family:'IBM Plex Mono',monospace;color:var(--ph);">Includes mirror downloads</span>
+      <a class="pypi-link" href="${p.pepy}" target="_blank" rel="noopener">pepy.tech ↗</a>
+    </div>`;
   return el;
 }
 
@@ -403,7 +454,37 @@ function setStats(pkg, allTime, month, day, perSec){
   if(at) at.textContent=fmtK(allTime);
   if(mo) mo.textContent=fmt(month);
   if(dy) dy.textContent=day===0?'0':fmt(day);
-  if(ps) ps.textContent=perSec;
+  if(ps) ps.textContent=perSec!=null?perSec:'—';
+}
+
+// Repaint all card stat tiles + both summary panels.
+function applyMode(){
+  const pkgs = Object.values(DATA);
+
+  // ── PyPIStats cards ────────────────────────────────────────────────────
+  pkgs.forEach(d => {
+    const perSec = d.recent.last_day > 0
+      ? (d.recent.last_day / 86400).toFixed(5) + '/s'
+      : '<0.01/s';
+    setStats(d.pkg, d.allTime, d.recent.last_month, d.recent.last_day, perSec);
+  });
+
+  // ── PyPIStats summary panel ────────────────────────────────────────────
+  document.getElementById('sumAllTime').textContent = fmtK(pkgs.reduce((s,d) => s + (d.allTime            || 0), 0));
+  document.getElementById('sumMonth').textContent   = fmt( pkgs.reduce((s,d) => s + (d.recent.last_month  || 0), 0));
+  document.getElementById('sumDay').textContent     = fmt( pkgs.reduce((s,d) => s + (d.recent.last_day    || 0), 0));
+
+  // ── Pepy cards ─────────────────────────────────────────────────────────
+  pkgs.forEach(d => {
+    const totalEl  = document.getElementById('pepy-' + d.pkg + '-total');
+    const uniqueEl = document.getElementById('pepy-' + d.pkg + '-unique');
+    if(totalEl)  totalEl.textContent  = d.pepyTotal  != null ? fmtK(d.pepyTotal)  : '—';
+    if(uniqueEl) uniqueEl.textContent = d.pepyUnique != null ? fmtK(d.pepyUnique) : '—';
+  });
+
+  // ── Pepy summary panel ─────────────────────────────────────────────────
+  document.getElementById('pepySumTotal').textContent  = fmtK(pkgs.reduce((s,d) => s + (d.pepyTotal  || 0), 0));
+  document.getElementById('pepySumUnique').textContent = fmtK(pkgs.reduce((s,d) => s + (d.pepyUnique || 0), 0));
 }
 
 // ---- Load from stats.json (same-origin, no CORS) ----
@@ -414,39 +495,36 @@ async function loadData(){
   const response = await fetch("stats.json?t=" + Date.now());
   const stats = await response.json();
 
-  // Paint each package whose data is present in stats.json
+  // Store all data and paint cards
   stats.packages.forEach(entry => {
     const p = PACKAGES.find(x => x.pkg === entry.package);
     if(!p) return;
 
     const series = (entry.series || []).sort((a,b) => new Date(a.date) - new Date(b.date));
-    const perSec = entry.last_day > 0
-      ? (entry.last_day / 86400).toFixed(5) + '/s'
-      : '<0.01/s';
 
     DATA[p.pkg] = {
-      recent: { last_day: entry.last_day, last_month: entry.last_month },
+      pkg:        p.pkg,
+      recent:     { last_day: entry.last_day, last_month: entry.last_month },
       series,
-      allTime: entry.all_time
+      allTime:    entry.all_time,
+      pepyTotal:  entry.pepy_total  ?? null,
+      pepyUnique: entry.pepy_unique ?? null
     };
 
-    setStats(p.pkg, entry.all_time, entry.last_month, entry.last_day, perSec);
     clearErrorChart(p.pkg);
     renderTimeChart(p.pkg, series.length ? series : [{date:'', downloads:0}]);
 
-    // Remove "snapshot" badge — data is live from stats.json
     const tag = document.getElementById('snaptag-' + p.pkg);
     if(tag) tag.style.display = 'none';
     const badge = document.getElementById('snapbadge-' + p.pkg);
     if(badge) badge.textContent = `v${p.version} · ${p.license}`;
   });
 
-  // Summary panel totals
-  const allPkgs = stats.packages;
-  document.getElementById('sumPkgs').textContent     = allPkgs.length;
-  document.getElementById('sumAllTime').textContent  = fmtK(allPkgs.reduce((s,p) => s + (p.all_time   || 0), 0));
-  document.getElementById('sumMonth').textContent    = fmt( allPkgs.reduce((s,p) => s + (p.last_month || 0), 0));
-  document.getElementById('sumDay').textContent      = fmt( allPkgs.reduce((s,p) => s + (p.last_day   || 0), 0));
+  document.getElementById('sumPkgs').textContent   = stats.packages.length;
+  document.getElementById('pepySumPkgs').textContent = stats.packages.length;
+
+  // Paint numbers for both tabs
+  applyMode();
 
   // Status bar: show stats.generated converted to IST (UTC+5:30)
   const generated = stats.generated ? new Date(stats.generated) : null;
@@ -462,16 +540,25 @@ async function loadData(){
   document.getElementById('statusText').textContent  = 'Data Last Updated: ' + updatedStr;
   document.getElementById('lastUpdated').textContent = '';
 
-  // Footer
   const footer = document.getElementById('footerUpdated');
   if(footer) footer.textContent = updatedStr ? 'Updated ' + updatedStr : '';
 }
 
-// Refresh re-fetches stats.json bypassing the browser cache so the
-// button always loads the latest file written by the GitHub Action.
+// Refresh re-fetches stats.json bypassing the browser cache.
 async function refresh(){
   await loadData();
 }
+
+// ---- Tab switching ----
+function switchTab(id){
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.id === id));
+  document.querySelectorAll('.tab-pane').forEach(p => p.classList.toggle('active',
+    (id === 'tabBtnPypi' && p.id === 'panePypi') ||
+    (id === 'tabBtnPepy' && p.id === 'panePepy')
+  ));
+}
+document.getElementById('tabBtnPypi').addEventListener('click', () => switchTab('tabBtnPypi'));
+document.getElementById('tabBtnPepy').addEventListener('click', () => switchTab('tabBtnPepy'));
 
 // ---- Modal ----
 function buildModalChart(type){
@@ -531,10 +618,14 @@ function toggleTheme(){
 document.getElementById('themeToggle').addEventListener('click', toggleTheme);
 
 // boot
-const grid=document.getElementById('grid');
-PACKAGES.forEach(p=>grid.appendChild(buildCard(p)));
-const roadmapGrid=document.getElementById('roadmapGrid');
-ROADMAP.forEach(r=>roadmapGrid.appendChild(buildRoadmapTile(r)));
+const gridPypi = document.getElementById('gridPypi');
+const gridPepy = document.getElementById('gridPepy');
+PACKAGES.forEach(p => {
+  gridPypi.appendChild(buildPypiCard(p));
+  gridPepy.appendChild(buildPepyCard(p));
+});
+const roadmapGrid = document.getElementById('roadmapGrid');
+ROADMAP.forEach(r => roadmapGrid.appendChild(buildRoadmapTile(r)));
 loadData();
 </script>
 </body>
