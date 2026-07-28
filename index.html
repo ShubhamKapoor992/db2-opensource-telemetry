@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Db2 Adapter Ecosystem — Download Telemetry</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<style>
+:root[data-theme="light"]{--bg:#ffffff;--l01:#f4f4f4;--l02:#e0e0e0;--b00:#e0e0e0;--b01:#c6c6c6;--tp:#161616;--ts:#525252;--ph:#a8a8a8;--link:#0f62fe;--ia:#0f62fe;--focus:#0f62fe;--tbb:#d0e2ff;--tbt:#0043ce;--tgb:#defbe6;--tgt:#0e6027;--tyb:#fdd13a;--tyt:#693f00;--tgrb:#e0e0e0;--tgrt:#393939;}
+:root[data-theme="dark"]{--bg:#161616;--l01:#262626;--l02:#393939;--b00:#393939;--b01:#525252;--tp:#f4f4f4;--ts:#c6c6c6;--ph:#6f6f6f;--link:#78a9ff;--ia:#4589ff;--focus:#ffffff;--tbb:#0043ce;--tbt:#a6c8ff;--tgb:#071908;--tgt:#a7f0ba;--tyb:#302400;--tyt:#f1c21b;--tgrb:#393939;--tgrt:#c6c6c6;}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tp);font-family:-apple-system,"Segoe UI",system-ui,sans-serif;font-size:14px;line-height:1.6;}
+@media(max-width:1024px){html,body{height:auto;overflow:auto;}}
+a{color:inherit;}
+a:focus-visible,button:focus-visible{outline:2px solid var(--focus);outline-offset:-2px;}
+.cds-header{display:flex;align-items:center;gap:12px;height:48px;background:#161616;padding:0 16px;border-bottom:1px solid #393939;flex-shrink:0;}
+.cds-header__name{font-size:14px;font-weight:600;color:#f4f4f4;white-space:nowrap;padding-right:16px;border-right:1px solid #393939;}
+.cds-header__name .prefix{font-weight:400;color:#a8a8a8;margin-right:6px;}
+.cds-header__route{color:#c6c6c6;font-size:13px;font-family:'IBM Plex Mono',monospace;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.cds-header__status{margin-left:auto;display:flex;align-items:center;gap:10px;flex-shrink:0;}
+.status-line{display:flex;align-items:center;gap:6px;font-size:12px;color:#c6c6c6;font-family:'IBM Plex Mono',monospace;white-space:nowrap;}
+.status-dot{width:7px;height:7px;border-radius:50%;background:#42be65;flex-shrink:0;}
+.status-dot.wait{background:#f1c21b;}
+.cds-header-btn{background:none;border:none;color:#c6c6c6;font-size:13px;cursor:pointer;padding:0 10px;height:48px;display:flex;align-items:center;}
+.cds-header-btn:hover{background:#393939;}
+.theme-toggle{width:40px;justify-content:center;font-size:14px;}
+.cds-shell{display:flex;flex-direction:column;height:100%;}
+.cds-shell-content{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:10px 24px 12px;}
+@media(max-width:1024px){.cds-shell-content{overflow-y:visible;padding:14px 20px 48px;}.cds-header__route{display:none;}}
+@media(max-width:768px){.cds-shell-content{padding:12px 16px 48px;}}
+.breadcrumb{display:flex;align-items:center;gap:5px;font-size:13px;color:var(--ts);margin-bottom:6px;font-family:'IBM Plex Mono',monospace;}
+.breadcrumb a{color:var(--link);text-decoration:none;}
+.breadcrumb a:hover{text-decoration:underline;}
+.breadcrumb .sep{color:var(--ph);}
+.page-head{border-bottom:1px solid var(--b01);padding-bottom:8px;margin-bottom:10px;display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;}
+.page-head h1{font-size:28px;line-height:36px;font-weight:300;color:var(--tp);}
+.page-head p{font-size:15px;line-height:22px;color:var(--ts);}
+@media(max-width:768px){.page-head{flex-direction:column;gap:6px;}.page-head h1{font-size:22px;}.page-head p{font-size:14px;}}
+.summary-panel{background:var(--l01);border:1px solid var(--b00);margin-bottom:10px;}
+[data-theme="dark"] .summary-panel{border-color:transparent;}
+.summary-panel__title{font-size:14px;font-weight:600;padding:8px 18px 0;color:var(--tp);}
+.summary-row{display:grid;grid-template-columns:repeat(5,1fr);padding:6px 18px 10px;}
+.summary-tile{padding:2px 18px;border-left:1px solid var(--b00);}
+.summary-tile:first-child{border-left:none;padding-left:0;}
+.summary-tile .label{font-size:13px;color:var(--ts);margin-bottom:4px;}
+.summary-tile .value{font-family:'IBM Plex Mono',monospace;font-size:26px;font-weight:300;color:var(--tp);}
+.summary-tile .value.small{font-size:14px;font-weight:400;color:var(--ts);font-family:-apple-system,"Segoe UI",system-ui,sans-serif;}
+@media(max-width:1024px){.summary-row{grid-template-columns:repeat(3,1fr);}}
+@media(max-width:768px){.summary-row{grid-template-columns:repeat(2,1fr);gap:0;padding:6px 14px 10px;}.summary-tile{padding:6px 12px;}.summary-tile .value{font-size:20px;}}
+.card-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:12px;}
+.roadmap-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:0;}
+@media(max-width:1024px){.card-grid{grid-template-columns:1fr;gap:14px;}.roadmap-grid{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:768px){.roadmap-grid{grid-template-columns:1fr;gap:10px;}}
+.tile{background:var(--l01);border:1px solid var(--b00);display:flex;flex-direction:column;}
+[data-theme="dark"] .tile{border-color:transparent;}
+.tile:hover{box-shadow:inset 0 0 0 1px var(--ia);}
+.tile-head{padding:12px 18px 10px;border-bottom:1px solid var(--b00);}
+.cds-tag{display:inline-flex;align-items:center;height:22px;padding:0 9px;font-size:12px;font-weight:400;border-radius:2px;background:var(--tbb);color:var(--tbt);margin-bottom:10px;}
+.cds-tag.green{background:var(--tgb);color:var(--tgt);}
+.cds-tag.yellow{background:var(--tyb);color:var(--tyt);}
+.cds-tag.gray{background:var(--tgrb);color:var(--tgrt);}
+.tile-head .pkgname{font-family:'IBM Plex Mono',monospace;font-size:17px;font-weight:600;color:var(--tp);word-break:break-all;}
+.tile-head .defn{font-size:14px;line-height:21px;color:var(--ts);margin-top:8px;}
+.tile-stats{display:grid;grid-template-columns:repeat(4,1fr);border-bottom:1px solid var(--b00);}
+.tile-stats > div{padding:8px 14px;border-left:1px solid var(--b00);min-width:0;}
+.tile-stats > div:first-child{border-left:none;}
+.tile-stats .slabel{font-size:11px;text-transform:uppercase;letter-spacing:.3px;color:var(--ts);margin-bottom:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.tile-stats .sval{font-family:'IBM Plex Mono',monospace;font-size:22px;font-weight:500;color:var(--tp);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.tile-chart-wrap{flex:1;display:flex;flex-direction:column;min-height:0;}
+.chart-type-bar{display:flex;align-items:center;padding:4px 8px;gap:0;border-bottom:1px solid var(--b00);}
+.ct-btn{background:var(--bg);border:1px solid var(--b01);color:var(--ts);font-size:11px;padding:2px 10px;cursor:pointer;font-family:-apple-system,"Segoe UI",system-ui,sans-serif;}
+.ct-btn:first-child{border-radius:2px 0 0 2px;}
+.ct-btn:last-child{border-radius:0 2px 2px 0;}
+.ct-btn.active{background:var(--ia);color:#fff;border-color:var(--ia);z-index:1;position:relative;}
+.ct-btn:hover:not(.active){background:var(--b00);}
+.chart-expand-hint{margin-left:auto;font-size:12px;color:var(--ph);font-family:'IBM Plex Mono',monospace;cursor:pointer;padding:0 4px;}
+.tile-chart{flex:1;padding:6px 8px 4px;position:relative;cursor:pointer;min-height:80px;}
+.tile-chart canvas{max-height:88px;}
+.chart-err{font-size:12px;color:var(--ph);padding-top:30px;text-align:center;display:none;}
+.tile-foot{padding:7px 18px;border-top:1px solid var(--b00);display:flex;justify-content:space-between;align-items:center;}
+.tile-foot .pypi-link{color:var(--link);text-decoration:none;font-size:13px;font-weight:500;}
+.tile-foot .pypi-link:hover{text-decoration:underline;}
+.tile-foot .snap-badge{font-size:12px;font-family:'IBM Plex Mono',monospace;color:var(--ph);}
+.roadmap-section-title{font-size:15px;font-weight:600;color:var(--tp);margin-bottom:8px;padding-bottom:5px;border-bottom:1px solid var(--b01);}
+.roadmap-tile{background:var(--l01);border:1px solid var(--b00);padding:12px 16px;display:flex;flex-direction:column;gap:6px;}
+[data-theme="dark"] .roadmap-tile{border-color:transparent;}
+.roadmap-tile .rt-name{font-size:16px;font-weight:600;font-family:'IBM Plex Mono',monospace;color:var(--tp);}
+.roadmap-tile .rt-desc{font-size:13px;line-height:20px;color:var(--ts);}
+.roadmap-tile .rt-note{font-size:12px;font-family:'IBM Plex Mono',monospace;color:var(--ph);}
+.page-foot{padding-top:10px;border-top:1px solid var(--b00);font-size:12px;color:var(--ts);display:flex;justify-content:space-between;flex-wrap:wrap;gap:4px;margin-top:10px;}
+.cds-modal-overlay{display:none;position:fixed;inset:0;background:rgba(22,22,22,.7);z-index:9000;align-items:center;justify-content:center;padding:24px;}
+.cds-modal-overlay.open{display:flex;}
+.cds-modal{background:var(--l01);width:min(960px,100%);max-height:90vh;overflow:auto;box-shadow:0 8px 24px rgba(0,0,0,.4);}
+.cds-modal-header{display:flex;justify-content:space-between;align-items:flex-start;padding:20px 26px 14px;border-bottom:1px solid var(--b00);}
+.cds-modal-header h2{font-family:'IBM Plex Mono',monospace;font-size:18px;font-weight:600;color:var(--tp);}
+.cds-modal-header p{font-size:13px;color:var(--ts);margin-top:6px;}
+.cds-modal-close{width:44px;height:44px;background:none;border:none;font-size:15px;cursor:pointer;color:var(--tp);flex-shrink:0;}
+.cds-modal-close:hover{background:var(--l02);}
+.modal-chart-type-bar{display:flex;align-items:center;gap:0;padding:10px 20px 0;}
+.modal-body{padding:16px 20px 20px;}
+.modal-canvas-wrap{height:300px;}
+@media(max-width:480px){#statusText{display:none;}#lastUpdated{display:none;}}
+</style>
+</head>
+<body>
+<div class="cds-shell">
+  <div class="cds-header">
+    <div class="cds-header__name"><span class="prefix">IBM</span>Db2 — Adapter Ecosystem</div>
+    <div class="cds-header__route">Adapter Ecosystem / Download Telemetry</div>
+    <div class="cds-header__status">
+      <div class="status-line"><span class="status-dot wait" id="statusDot"></span><span id="statusText">Loading…</span></div>
+      <div class="status-line" id="lastUpdated"></div>
+      <button class="cds-header-btn theme-toggle" id="themeToggle" title="Switch theme">☾</button>
+      <button class="cds-header-btn" id="refreshBtn">↻ Refresh</button>
+    </div>
+  </div>
+  <div class="cds-shell-content">
+    <div class="breadcrumb">
+      <a href="#">IBM Open Source</a><span class="sep">/</span>
+      <a href="#">Db2</a><span class="sep">/</span>
+      <span>Adapter Ecosystem Telemetry</span>
+    </div>
+    <div class="page-head">
+      <h1>Adapter Ecosystem — Download Telemetry</h1>
+      <p>Community-built Db2 adapter packages for SQLGlot, dbt, Airflow and Ibis. Data refreshed hourly via GitHub Actions.</p>
+    </div>
+    <div class="summary-panel">
+      <div class="summary-panel__title">Ecosystem overview</div>
+      <div class="summary-row">
+        <div class="summary-tile"><div class="label">Packages tracked</div><div class="value" id="sumPkgs">—</div></div>
+        <div class="summary-tile"><div class="label">Total all-time</div><div class="value" id="sumAllTime">—</div></div>
+        <div class="summary-tile"><div class="label">Last 30 days</div><div class="value" id="sumMonth">—</div></div>
+        <div class="summary-tile"><div class="label">Last 24 h</div><div class="value" id="sumDay">—</div></div>
+        <div class="summary-tile"><div class="label">Data source</div><div class="value small">pypistats.org</div></div>
+      </div>
+    </div>
+    <div class="card-grid" id="grid"></div>
+    <div class="roadmap-section-title">Connector Roadmap</div>
+    <div class="roadmap-grid" id="roadmapGrid"></div>
+    <div class="page-foot">
+      <span>IBM Db2 Adapter Ecosystem</span>
+      <span id="footerUpdated"></span>
+    </div>
+  </div>
+</div>
+
+<div class="cds-modal-overlay" id="modalBg">
+  <div class="cds-modal">
+    <div class="cds-modal-header">
+      <div><h2 id="modalTitle">—</h2><p id="modalSub">—</p></div>
+      <button class="cds-modal-close" id="modalCloseBtn">✕</button>
+    </div>
+    <div class="modal-chart-type-bar">
+      <button class="ct-btn active" data-type="line">Line</button>
+      <button class="ct-btn" data-type="bar">Bar</button>
+      <button class="ct-btn" data-type="area">Area</button>
+    </div>
+    <div class="modal-body"><div class="modal-canvas-wrap"><canvas id="modalCanvas"></canvas></div></div>
+  </div>
+</div>
+
+<script>
+// ---------------------------------------------------------------------------
+// Data flows entirely from stats.json — generated hourly by GitHub Actions.
+// No direct calls to pypistats.org from the browser.
+// Same-origin fetch: no CORS required.
+// ---------------------------------------------------------------------------
+const PACKAGES = [
+  {
+    pkg: "db2-sqlglot-dialect",
+    framework: "SQLGlot",
+    defn: "IBM Db2 dialect plugin for SQLGlot — transpile, parse, and generate Db2 SQL with full AST support, enabling SQLMesh and other SQLGlot-based tools to target Db2.",
+    pypi: "https://pypi.org/project/db2-sqlglot-dialect/",
+    pepy: "https://pepy.tech/projects/db2-sqlglot-dialect",
+    version: "1.0.0",
+    license: "Apache-2.0"
+  },
+  {
+    pkg: "ibm-dbt-db2",
+    framework: "dbt",
+    defn: "IBM Db2 adapter for dbt-core — run dbt projects against IBM Db2 with full support for materializations, snapshots, seeds, incremental models, and schema introspection.",
+    pypi: "https://pypi.org/project/ibm-dbt-db2/",
+    pepy: "https://pepy.tech/projects/ibm-dbt-db2",
+    version: "1.0.0",
+    license: "Apache-2.0"
+  },
+  {
+    pkg: "ibm-airflow-provider-db2",
+    framework: "Airflow",
+    defn: "Native IBM Db2 provider for Apache Airflow — Db2Hook, Db2Operator, and connection-type support for ETL pipeline orchestration.",
+    pypi: "https://pypi.org/project/ibm-airflow-provider-db2/",
+    pepy: "https://pepy.tech/projects/ibm-airflow-provider-db2",
+    version: "1.0.0",
+    license: "Apache-2.0"
+  },
+  {
+    pkg: "ibis-db2",
+    framework: "Ibis",
+    defn: "IBM Db2 backend for Ibis — the portable Python dataframe library — enabling dialect-independent analytics SQL execution against Db2.",
+    pypi: "https://pypi.org/project/ibis-db2/",
+    pepy: "https://pepy.tech/projects/ibis-db2",
+    version: "1.0.0",
+    license: "Apache-2.0"
+  }
+];
+
+const ROADMAP = [
+  {
+    framework: "Apache Airflow",
+    status: "in-progress",
+    statusLabel: "In Progress",
+    desc: "Native IBM Db2 provider for Apache Airflow — Db2Hook, Db2Operator, and connection-type support for ETL pipeline orchestration.",
+    note: "Development in progress"
+  },
+  {
+    framework: "Ibis",
+    status: "planned",
+    statusLabel: "Planned",
+    desc: "IBM Db2 backend for Ibis — the portable Python dataframe library — enabling dialect-independent analytics SQL execution against Db2.",
+    note: "Scoping · Q4 2026"
+  },
+  {
+    framework: "SQLMesh",
+    status: "in-progress",
+    statusLabel: "In Progress · Beta",
+    desc: "IBM Db2 engine adapter for SQLMesh — full support for virtual data environments, incremental models, snapshots, and automated plan/apply against Db2.",
+    note: "Beta · active development"
+  },
+  {
+    framework: "Apache Arrow",
+    status: "planned",
+    statusLabel: "Planned",
+    desc: "ADBC (Arrow Database Connectivity) driver for IBM Db2 — zero-copy columnar data exchange between Db2 and the Apache Arrow ecosystem.",
+    note: "Scoping · 2026"
+  }
+];
+
+const tileChartType = {};
+const charts = {};
+let modalChart = null;
+let modalCurrentType = 'line';
+let modalCurrentPkg = null;
+const DATA = {};
+
+function fmt(n){ if(n===null||n===undefined||isNaN(n)) return "—"; return n.toLocaleString('en-US'); }
+function fmtK(n){ if(n===null||n===undefined||isNaN(n)) return "—"; if(n>=1000) return (n/1000).toFixed(1).replace(/\.0$/,'')+'k'; return String(n); }
+
+function buildCard(p){
+  const id = p.pkg;
+  tileChartType[id] = 'line';
+  const el = document.createElement('div');
+  el.className = 'tile';
+  el.innerHTML = `
+    <div class="tile-head">
+      <span class="cds-tag">${p.framework}</span>
+      <span class="cds-tag gray" id="snaptag-${id}" style="margin-left:5px;">snapshot</span>
+      <div class="pkgname">${id}</div>
+      <div class="defn">${p.defn}</div>
+    </div>
+    <div class="tile-stats">
+      <div><div class="slabel">All-time</div><div class="sval" id="stat-alltime-${id}">…</div></div>
+      <div><div class="slabel">Last 30 days</div><div class="sval" id="stat-month-${id}">…</div></div>
+      <div><div class="slabel">Last 24 h</div><div class="sval" id="stat-day-${id}">…</div></div>
+      <div><div class="slabel">Per second</div><div class="sval" id="stat-sec-${id}">…</div></div>
+    </div>
+    <div class="tile-chart-wrap">
+      <div class="chart-type-bar">
+        <button class="ct-btn active" data-pkg="${id}" data-type="line">Line</button>
+        <button class="ct-btn" data-pkg="${id}" data-type="bar">Bar</button>
+        <button class="ct-btn" data-pkg="${id}" data-type="area">Area</button>
+        <span class="chart-expand-hint" id="expand-${id}" title="Expand">⤢ expand</span>
+      </div>
+      <div class="tile-chart" id="chartbox-${id}">
+        <canvas id="spark-${id}"></canvas>
+        <div class="chart-err" id="err-${id}">chart unavailable</div>
+      </div>
+    </div>
+    <div class="tile-foot">
+      <span class="snap-badge" id="snapbadge-${id}"></span>
+      <div style="display:flex;gap:10px;align-items:center;">
+        <a class="pypi-link" href="${p.pepy}" target="_blank" rel="noopener">pepy.tech ↗</a>
+        <a class="pypi-link" href="${p.pypi}" target="_blank" rel="noopener">PyPI ↗</a>
+      </div>
+    </div>`;
+  el.querySelectorAll('.ct-btn').forEach(btn=>{
+    btn.addEventListener('click', e=>{
+      e.stopPropagation();
+      const pkg=btn.dataset.pkg, type=btn.dataset.type;
+      tileChartType[pkg]=type;
+      el.querySelectorAll('.ct-btn').forEach(b=>b.classList.toggle('active',b.dataset.type===type));
+      redrawTileChart(pkg);
+    });
+  });
+  el.querySelector('#expand-'+id).addEventListener('click', e=>{e.stopPropagation();expandChart(id);});
+  el.querySelector('#chartbox-'+id).addEventListener('click', ()=>expandChart(id));
+  return el;
+}
+
+function buildRoadmapTile(r){
+  const el = document.createElement('div');
+  el.className = 'roadmap-tile';
+  const tagClass = r.status==='approved' ? 'green' : r.status==='in-progress' ? '' : 'yellow';
+  el.innerHTML = `
+    <span class="cds-tag ${tagClass}">${r.statusLabel}</span>
+    <div class="rt-name">${r.framework}</div>
+    <div class="rt-desc">${r.desc}</div>
+    <div class="rt-note">${r.note}</div>`;
+  return el;
+}
+
+function chartColors(){
+  const dark = document.documentElement.getAttribute('data-theme')==='dark';
+  return {
+    line: dark?'#78a9ff':'#0f62fe', fill: dark?'rgba(120,169,255,0.13)':'rgba(15,98,254,0.09)',
+    grid: dark?'#393939':'#e0e0e0', tick: dark?'#c6c6c6':'#525252', bar: dark?'#78a9ff':'#0f62fe'
+  };
+}
+
+function redrawTileChart(pkg){ const d=DATA[pkg]; if(!d) return; renderTimeChart(pkg, d.series); }
+
+function renderTimeChart(pkg, series){
+  const ctx=document.getElementById('spark-'+pkg); if(!ctx) return;
+  if(charts[pkg]) charts[pkg].destroy();
+  const c=chartColors(), type=tileChartType[pkg]||'line';
+  const labels=series.map(d=>d.date), vals=series.map(d=>d.downloads);
+  if(type==='bar'){
+    charts[pkg]=new Chart(ctx,{type:'bar',
+      data:{labels,datasets:[{data:vals,backgroundColor:c.bar,borderRadius:0,maxBarThickness:8}]},
+      options:{responsive:true,maintainAspectRatio:false,animation:false,
+        plugins:{legend:{display:false},tooltip:{callbacks:{title:i=>i[0].label,label:ctx=>' '+fmt(ctx.raw)+' downloads'}}},
+        scales:{x:{display:false},y:{display:false}}}});
+  } else {
+    charts[pkg]=new Chart(ctx,{type:'line',
+      data:{labels,datasets:[{data:vals,borderColor:c.line,borderWidth:1.5,pointRadius:0,fill:type==='area',backgroundColor:c.fill,tension:0.15}]},
+      options:{responsive:true,maintainAspectRatio:false,animation:false,
+        plugins:{legend:{display:false},tooltip:{mode:'index',intersect:false,callbacks:{title:i=>i[0].label,label:ctx=>' '+fmt(ctx.raw)+' downloads'}}},
+        scales:{x:{display:false},y:{display:false}}}});
+  }
+}
+
+function renderErrorChart(pkg){
+  const canvas=document.getElementById('spark-'+pkg), err=document.getElementById('err-'+pkg);
+  if(charts[pkg]){charts[pkg].destroy();delete charts[pkg];}
+  if(canvas) canvas.style.display='none';
+  if(err) err.style.display='block';
+}
+
+function clearErrorChart(pkg){
+  const canvas=document.getElementById('spark-'+pkg), err=document.getElementById('err-'+pkg);
+  if(canvas) canvas.style.display='';
+  if(err) err.style.display='none';
+}
+
+function setStats(pkg, allTime, month, day, perSec){
+  const at=document.getElementById('stat-alltime-'+pkg), mo=document.getElementById('stat-month-'+pkg);
+  const dy=document.getElementById('stat-day-'+pkg), ps=document.getElementById('stat-sec-'+pkg);
+  if(at) at.textContent=fmtK(allTime);
+  if(mo) mo.textContent=fmt(month);
+  if(dy) dy.textContent=day===0?'0':fmt(day);
+  if(ps) ps.textContent=perSec;
+}
+
+// ---- Load from stats.json (same-origin, no CORS) ----
+async function loadData(){
+  document.getElementById('statusDot').className = 'status-dot wait';
+  document.getElementById('statusText').textContent = 'Loading…';
+
+  const response = await fetch("stats.json");
+  const stats = await response.json();
+
+  // Paint each package whose data is present in stats.json
+  stats.packages.forEach(entry => {
+    const p = PACKAGES.find(x => x.pkg === entry.package);
+    if(!p) return;
+
+    const series = (entry.series || []).sort((a,b) => new Date(a.date) - new Date(b.date));
+    const perSec = entry.last_day > 0
+      ? (entry.last_day / 86400).toFixed(5) + '/s'
+      : '<0.01/s';
+
+    DATA[p.pkg] = {
+      recent: { last_day: entry.last_day, last_month: entry.last_month },
+      series,
+      allTime: entry.all_time
+    };
+
+    setStats(p.pkg, entry.all_time, entry.last_month, entry.last_day, perSec);
+    clearErrorChart(p.pkg);
+    renderTimeChart(p.pkg, series.length ? series : [{date:'', downloads:0}]);
+
+    // Remove "snapshot" badge — data is live from stats.json
+    const tag = document.getElementById('snaptag-' + p.pkg);
+    if(tag) tag.style.display = 'none';
+    const badge = document.getElementById('snapbadge-' + p.pkg);
+    if(badge) badge.textContent = `v${p.version} · ${p.license}`;
+  });
+
+  // Summary panel totals
+  const allPkgs = stats.packages;
+  document.getElementById('sumPkgs').textContent     = allPkgs.length;
+  document.getElementById('sumAllTime').textContent  = fmtK(allPkgs.reduce((s,p) => s + (p.all_time   || 0), 0));
+  document.getElementById('sumMonth').textContent    = fmt( allPkgs.reduce((s,p) => s + (p.last_month || 0), 0));
+  document.getElementById('sumDay').textContent      = fmt( allPkgs.reduce((s,p) => s + (p.last_day   || 0), 0));
+
+  // Status bar: show stats.generated
+  const generated = stats.generated ? new Date(stats.generated) : null;
+  const updatedStr = generated
+    ? generated.toLocaleString('en-US', { month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' }) + ' UTC'
+    : '';
+  document.getElementById('statusDot').className     = 'status-dot';
+  document.getElementById('statusText').textContent  = 'Updated: ' + updatedStr;
+  document.getElementById('lastUpdated').textContent = '';
+
+  // Footer
+  const footer = document.getElementById('footerUpdated');
+  if(footer) footer.textContent = updatedStr ? 'Updated ' + updatedStr : '';
+}
+
+async function refresh(){
+  await loadData();
+}
+
+// ---- Modal ----
+function buildModalChart(type){
+  const pkg=modalCurrentPkg; if(!pkg) return;
+  const p=PACKAGES.find(x=>x.pkg===pkg), d=DATA[pkg]; if(!d) return;
+  const ctx=document.getElementById('modalCanvas'), c=chartColors();
+  if(modalChart) modalChart.destroy();
+  const labels=d.series.map(x=>x.date), vals=d.series.map(x=>x.downloads);
+  if(type==='bar'){
+    modalChart=new Chart(ctx,{type:'bar',data:{labels,datasets:[{data:vals,backgroundColor:c.bar,borderRadius:0,maxBarThickness:8}]},
+      options:{responsive:true,maintainAspectRatio:false,
+        plugins:{legend:{display:false},tooltip:{mode:'index',intersect:false,callbacks:{title:i=>i[0].label,label:ctx=>' '+fmt(ctx.raw)+' downloads'}}},
+        scales:{x:{ticks:{maxTicksLimit:8,color:c.tick,font:{family:"'IBM Plex Mono',monospace",size:10}},grid:{display:false}},
+                y:{ticks:{color:c.tick,font:{family:"'IBM Plex Mono',monospace",size:10}},grid:{color:c.grid}}}}});
+  } else {
+    modalChart=new Chart(ctx,{type:'line',data:{labels,datasets:[{data:vals,borderColor:c.line,backgroundColor:c.fill,borderWidth:1.6,pointRadius:0,fill:type==='area',tension:.15}]},
+      options:{responsive:true,maintainAspectRatio:false,
+        plugins:{legend:{display:false},tooltip:{mode:'index',intersect:false,callbacks:{title:i=>i[0].label,label:ctx=>' '+fmt(ctx.raw)+' downloads'}}},
+        scales:{x:{ticks:{maxTicksLimit:8,color:c.tick,font:{family:"'IBM Plex Mono',monospace",size:10}},grid:{color:c.grid}},
+                y:{ticks:{color:c.tick,font:{family:"'IBM Plex Mono',monospace",size:10}},grid:{color:c.grid}}}}});
+  }
+}
+
+function expandChart(pkg){
+  modalCurrentPkg=pkg; modalCurrentType='line';
+  const p=PACKAGES.find(x=>x.pkg===pkg), d=DATA[pkg];
+  document.getElementById('modalTitle').textContent=p.pkg;
+  document.getElementById('modalSub').textContent=d
+    ? `${p.framework} · all-time ${fmtK(d.allTime||0)} · 30d ${fmt(d.recent?.last_month)} · 24h ${fmt(d.recent?.last_day)}${d.isSnapshot?' · snapshot':''}`
+    : 'Data unavailable';
+  document.querySelectorAll('.modal-chart-type-bar .ct-btn').forEach(b=>b.classList.toggle('active',b.dataset.type==='line'));
+  document.getElementById('modalBg').classList.add('open');
+  buildModalChart('line');
+}
+
+document.querySelectorAll('.modal-chart-type-bar .ct-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    const type=btn.dataset.type; modalCurrentType=type;
+    document.querySelectorAll('.modal-chart-type-bar .ct-btn').forEach(b=>b.classList.toggle('active',b.dataset.type===type));
+    buildModalChart(type);
+  });
+});
+
+function closeModal(){ document.getElementById('modalBg').classList.remove('open'); }
+document.getElementById('modalBg').addEventListener('click', e=>{ if(e.target.id==='modalBg') closeModal(); });
+document.getElementById('modalCloseBtn').addEventListener('click', closeModal);
+document.getElementById('refreshBtn').addEventListener('click', ()=>refresh());
+
+function toggleTheme(){
+  const html=document.documentElement;
+  const next=html.getAttribute('data-theme')==='dark'?'light':'dark';
+  html.setAttribute('data-theme',next);
+  document.getElementById('themeToggle').textContent=next==='dark'?'☀':'☾';
+  Object.keys(charts).forEach(pkg=>redrawTileChart(pkg));
+  if(modalChart&&document.getElementById('modalBg').classList.contains('open')) buildModalChart(modalCurrentType);
+}
+document.getElementById('themeToggle').addEventListener('click', toggleTheme);
+
+// boot
+const grid=document.getElementById('grid');
+PACKAGES.forEach(p=>grid.appendChild(buildCard(p)));
+const roadmapGrid=document.getElementById('roadmapGrid');
+ROADMAP.forEach(r=>roadmapGrid.appendChild(buildRoadmapTile(r)));
+loadData();
+</script>
+</body>
+</html>
