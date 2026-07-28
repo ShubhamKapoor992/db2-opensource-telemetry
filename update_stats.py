@@ -1,7 +1,7 @@
 import requests
 import json
 import time
-from datetime import datetime
+from datetime import datetime, timezone
 
 PACKAGES = [
     {
@@ -19,15 +19,30 @@ HEADERS = {
     "User-Agent": "db2-opensource-telemetry/1.0 (+https://github.com/ShubhamKapoor992/db2-opensource-telemetry)"
 }
 
-SLEEP_BETWEEN_CALLS = 35   # seconds between every API call
-SLEEP_ON_RATE_LIMIT = 30   # extra seconds to wait after a 429
+SLEEP_BETWEEN_CALLS = 35   # seconds to wait before every API call
+SLEEP_ON_RATE_LIMIT = 60   # extra seconds to wait after a 429 before retrying
+
+# Track whether this is the very first call so we don't sleep before it
+_first_call = True
 
 
 def get_json(url, pkg_name):
     """Fetch URL and return parsed JSON, or None on any error.
-    On a 429 response, waits SLEEP_ON_RATE_LIMIT seconds then retries once.
+
+    Sleeps SLEEP_BETWEEN_CALLS seconds before every call (except the first).
+    On a 429 response, waits an additional SLEEP_ON_RATE_LIMIT seconds then
+    retries exactly once.
     """
+    global _first_call
+
     for attempt in (1, 2):
+        # Always sleep before making a request (skip only before the very first call)
+        if _first_call:
+            _first_call = False
+        else:
+            print(f"  Sleeping {SLEEP_BETWEEN_CALLS}s before next call …")
+            time.sleep(SLEEP_BETWEEN_CALLS)
+
         try:
             resp = requests.get(url, headers=HEADERS, timeout=15)
         except requests.RequestException as exc:
@@ -40,7 +55,7 @@ def get_json(url, pkg_name):
 
         if resp.status_code == 429:
             if attempt == 1:
-                print(f"  [{pkg_name}] rate-limited (429) — sleeping {SLEEP_ON_RATE_LIMIT}s then retrying…")
+                print(f"  [{pkg_name}] rate-limited (429) — sleeping {SLEEP_ON_RATE_LIMIT}s then retrying …")
                 time.sleep(SLEEP_ON_RATE_LIMIT)
                 continue
             else:
@@ -79,15 +94,11 @@ for pkg in PACKAGES:
         f"https://pypistats.org/api/packages/{name}/recent",
         name
     )
-    print(f"  Sleeping {SLEEP_BETWEEN_CALLS}s …")
-    time.sleep(SLEEP_BETWEEN_CALLS)
 
     overall_data = get_json(
         f"https://pypistats.org/api/packages/{name}/overall?mirrors=false",
         name
     )
-    print(f"  Sleeping {SLEEP_BETWEEN_CALLS}s …")
-    time.sleep(SLEEP_BETWEEN_CALLS)
 
     if recent_data is None or overall_data is None:
         print(f"  [{name}] skipped — incomplete data")
@@ -114,7 +125,7 @@ for pkg in PACKAGES:
 with open("stats.json", "w") as f:
     json.dump(
         {
-            "generated": datetime.utcnow().isoformat(),
+            "generated": datetime.now(timezone.utc).isoformat(),
             "packages": result
         },
         f,
