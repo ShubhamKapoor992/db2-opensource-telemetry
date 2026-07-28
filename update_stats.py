@@ -11,6 +11,22 @@ PACKAGES = [
     {
         "name": "ibm-dbt-db2",
         "framework": "dbt"
+    },
+    {
+        "name": "lfx-ibm",
+        "framework": "Langflow Db2 AI connector"
+    },
+    {
+        "name": "langchain-db2",
+        "framework": "LangChain Db2 connector"
+    },
+    {
+        "name": "lbm-db-haystack",
+        "framework": "Haystack Db2 connector"
+    },
+    {
+        "name": "llama-index-vector-stores-db2",
+        "framework": "LlamaIndex Db2 connector"
     }
 ]
 
