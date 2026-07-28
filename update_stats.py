@@ -114,70 +114,89 @@ result = []
 
 for pkg in PACKAGES:
     name = pkg["name"]
-    print(f"\nFetching {name} …")
 
-    recent_data = get_json(
-        f"https://pypistats.org/api/packages/{name}/recent",
-        name
-    )
+    # ── Tab 1 · PyPIStats ────────────────────────────────────────────────────
+    print(f"\n{'='*60}")
+    print(f"  [Tab 1 · PyPIStats] Fetching: {name}")
+    print(f"  Source: https://pypistats.org/api/packages/{name}/")
+    print(f"{'='*60}")
 
-    overall_data = get_json(
-        f"https://pypistats.org/api/packages/{name}/overall?mirrors=false",
-        name
-    )
+    recent_url  = f"https://pypistats.org/api/packages/{name}/recent"
+    overall_url = f"https://pypistats.org/api/packages/{name}/overall?mirrors=false"
+
+    print(f"  → GET {recent_url}")
+    recent_data = get_json(recent_url, name)
+
+    print(f"  → GET {overall_url}")
+    overall_data = get_json(overall_url, name)
 
     if recent_data is None or overall_data is None:
-        print(f"  [{name}] skipped — incomplete data")
+        print(f"  [PyPIStats/{name}] skipped — incomplete data")
         continue
 
     series = [
         x for x in overall_data["data"]
         if x["category"] == "without_mirrors"
     ]
+    all_time   = sum(x["downloads"] for x in series)
+    last_month = recent_data["data"]["last_month"]
+    last_day   = recent_data["data"]["last_day"]
 
-    all_time = sum(x["downloads"] for x in series)
+    print(f"  [PyPIStats/{name}] ✓ all_time={all_time}  last_month={last_month}  last_day={last_day}")
 
-    # ── Pepy: total + unique downloads ──────────────────────────────────────
-    pepy_total = None
+    # ── Tab 2 · Pepy ─────────────────────────────────────────────────────────
+    print(f"\n  [Tab 2 · Pepy] Fetching: {name}")
+    pepy_url = f"https://api.pepy.tech/api/v2/projects/{name}"
+    print(f"  Source: {pepy_url}")
+    print(f"  → GET {pepy_url}")
+
+    pepy_total  = None
     pepy_unique = None
     try:
-        pepy_resp = requests.get(
-            f"https://api.pepy.tech/api/v2/projects/{name}",
-            headers=PEPY_HEADERS,
-            timeout=15
-        )
-        print(f"  [pepy/{name}] Status: {pepy_resp.status_code}")
+        pepy_resp = requests.get(pepy_url, headers=PEPY_HEADERS, timeout=15)
+        print(f"  [Pepy/{name}] Status: {pepy_resp.status_code}")
         if pepy_resp.ok:
-            pepy_data = pepy_resp.json()
+            pepy_data   = pepy_resp.json()
             pepy_total  = pepy_data.get("total_downloads")
             pepy_unique = pepy_data.get("total_unique_downloads")
-            print(f"  [pepy/{name}] total={pepy_total}  unique={pepy_unique}")
+            print(f"  [Pepy/{name}] ✓ total={pepy_total}  unique={pepy_unique}")
         else:
-            print(f"  [pepy/{name}] HTTP {pepy_resp.status_code} — pepy data unavailable")
+            print(f"  [Pepy/{name}] HTTP {pepy_resp.status_code} — data unavailable")
     except Exception as exc:
-        print(f"  [pepy/{name}] error: {exc}")
+        print(f"  [Pepy/{name}] error: {exc}")
 
+    # ── stats.json entry — fields grouped by source ───────────────────────
     result.append({
-        "package": name,
+        "package":   name,
         "framework": pkg["framework"],
-        "all_time": all_time,
-        "last_month": recent_data["data"]["last_month"],
-        "last_day": recent_data["data"]["last_day"],
-        "series": series,
-        "pepy_total": pepy_total,
-        "pepy_unique": pepy_unique
+        # Tab 1 · PyPIStats fields
+        "pypistats": {
+            "all_time":   all_time,
+            "last_month": last_month,
+            "last_day":   last_day,
+            "series":     series
+        },
+        # Tab 2 · Pepy fields
+        "pepy": {
+            "total":  pepy_total,
+            "unique": pepy_unique
+        }
     })
 
-    print(f"  [{name}] all-time={all_time}  last_month={recent_data['data']['last_month']}  last_day={recent_data['data']['last_day']}")
+    print(f"\n  Saved to stats.json → pypistats.all_time={all_time} | pepy.total={pepy_total}")
 
 with open("stats.json", "w") as f:
     json.dump(
         {
             "generated": datetime.now(timezone.utc).isoformat(),
-            "packages": result
+            "packages":  result
         },
         f,
         indent=2
     )
 
-print(f"\nDone. Wrote {len(result)}/{len(PACKAGES)} packages to stats.json")
+print(f"\n{'='*60}")
+print(f"Done. Wrote {len(result)}/{len(PACKAGES)} packages to stats.json")
+print(f"  Tab 1 (PyPIStats) fields: all_time, last_month, last_day, series")
+print(f"  Tab 2 (Pepy)      fields: total, unique")
+print(f"{'='*60}")

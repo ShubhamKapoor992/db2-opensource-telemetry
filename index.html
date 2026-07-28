@@ -496,19 +496,24 @@ async function loadData(){
   const stats = await response.json();
 
   // Store all data and paint cards
+  // stats.json shape (Tab 1 source: pypistats, Tab 2 source: pepy):
+  //   entry.pypistats.{ all_time, last_month, last_day, series[] }
+  //   entry.pepy.{     total, unique }
   stats.packages.forEach(entry => {
     const p = PACKAGES.find(x => x.pkg === entry.package);
     if(!p) return;
 
-    const series = (entry.series || []).sort((a,b) => new Date(a.date) - new Date(b.date));
+    const ps     = entry.pypistats || {};   // Tab 1 · PyPIStats
+    const pepy   = entry.pepy      || {};   // Tab 2 · Pepy
+    const series = (ps.series || []).sort((a,b) => new Date(a.date) - new Date(b.date));
 
     DATA[p.pkg] = {
       pkg:        p.pkg,
-      recent:     { last_day: entry.last_day, last_month: entry.last_month },
+      recent:     { last_day: ps.last_day, last_month: ps.last_month },
       series,
-      allTime:    entry.all_time,
-      pepyTotal:  entry.pepy_total  ?? null,
-      pepyUnique: entry.pepy_unique ?? null
+      allTime:    ps.all_time   ?? null,
+      pepyTotal:  pepy.total    ?? null,
+      pepyUnique: pepy.unique   ?? null
     };
 
     clearErrorChart(p.pkg);
