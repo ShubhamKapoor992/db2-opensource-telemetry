@@ -40,8 +40,8 @@ PEPY_HEADERS = {
     "X-Api-Key": "CLNCvUFl8juaVTabc1TWzm9lYJZxmRqL"
 }
 
-SLEEP_BETWEEN_CALLS = 0     # TEST MODE — set to 60 for production
-SLEEP_ON_RATE_LIMIT = 0     # TEST MODE — set to 120 for production
+SLEEP_BETWEEN_CALLS = 60     # TEST MODE — set to 0
+SLEEP_ON_RATE_LIMIT = 120     # TEST MODE — set to 0
 
 # Track whether this is the very first call so we don't sleep before it
 _first_call = True
