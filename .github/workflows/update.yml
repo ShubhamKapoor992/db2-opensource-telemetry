@@ -8,10 +8,6 @@ on:
 
   workflow_dispatch:
 
-# Cancel any in-progress run for the same workflow so runs never pile up.
-concurrency:
-  group: update-stats
-  cancel-in-progress: true
 
 permissions:
   contents: write
@@ -21,7 +17,6 @@ jobs:
   update:
 
     runs-on: ubuntu-latest
-    timeout-minutes: 20   # update_stats.py sleeps ~6 min total; kill if hung
 
     steps:
 
