@@ -2,9 +2,16 @@ name: Update Download Stats
 
 on:
   schedule:
+    # Runs at minute 0 of every hour (UTC).
+    # NOTE: GitHub may delay scheduled runs by up to 60 min during high load.
     - cron: "0 * * * *"
 
   workflow_dispatch:
+
+# Cancel any in-progress run for the same workflow so runs never pile up.
+concurrency:
+  group: update-stats
+  cancel-in-progress: true
 
 permissions:
   contents: write
@@ -14,6 +21,7 @@ jobs:
   update:
 
     runs-on: ubuntu-latest
+    timeout-minutes: 20   # update_stats.py sleeps ~6 min total; kill if hung
 
     steps:
 
@@ -27,14 +35,19 @@ jobs:
 
       - run: python update_stats.py
 
-      - name: Commit
+      - name: Commit and push (rebase-safe)
         run: |
-          git config user.name github-actions
+          git config user.name  github-actions
           git config user.email github-actions@github.com
 
           git add stats.json
 
-          git diff --cached --quiet || \
-          git commit -m "Update download stats"
+          # Skip commit+push entirely if nothing changed
+          git diff --cached --quiet && exit 0
 
-          git push
+          git commit -m "chore: update download stats [skip ci]"
+
+          # Rebase onto remote main before pushing to avoid race-condition
+          # failures when two scheduled runs overlap.
+          git pull --rebase origin main
+          git push origin main
