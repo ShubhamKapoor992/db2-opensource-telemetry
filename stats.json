@@ -1,5 +1,5 @@
 {
-  "generated": "2026-08-14T23:13:11.598038+00:00",
+  "generated": "2026-08-15T00:41:47.266758+00:00",
   "packages": [
     {
       "package": "db2-sqlglot-dialect",
@@ -787,10 +787,6 @@
         "last_day": 201,
         "series": [
           {
-            "date": "2026-05-15",
-            "downloads": 88
-          },
-          {
             "date": "2026-05-16",
             "downloads": 59
           },
@@ -1320,10 +1316,6 @@
         "last_month": 204,
         "last_day": 2,
         "series": [
-          {
-            "date": "2026-05-15",
-            "downloads": 46
-          },
           {
             "date": "2026-05-16",
             "downloads": 30
