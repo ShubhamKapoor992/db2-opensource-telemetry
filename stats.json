@@ -1,5 +1,5 @@
 {
-  "generated": "2026-08-17T05:26:49.023406+00:00",
+  "generated": "2026-08-17T06:34:51.403394+00:00",
   "packages": [
     {
       "package": "db2-sqlglot-dialect",
@@ -11,9 +11,9 @@
         "series": []
       },
       "pepy": {
-        "all_time": 2365,
-        "last_month": 1663,
-        "last_day": 51,
+        "all_time": 2717,
+        "last_month": 1994,
+        "last_day": 352,
         "series": [
           {
             "date": "2026-06-24",
@@ -222,6 +222,10 @@
           {
             "date": "2026-08-15",
             "downloads": 51
+          },
+          {
+            "date": "2026-08-16",
+            "downloads": 352
           }
         ]
       }
@@ -473,9 +477,9 @@
         "series": []
       },
       "pepy": {
-        "all_time": 111947,
-        "last_month": 87376,
-        "last_day": 982,
+        "all_time": 112852,
+        "last_month": 85811,
+        "last_day": 905,
         "series": [
           {
             "date": "2026-05-29",
@@ -792,6 +796,10 @@
           {
             "date": "2026-08-15",
             "downloads": 982
+          },
+          {
+            "date": "2026-08-16",
+            "downloads": 905
           }
         ]
       }
@@ -806,9 +814,9 @@
         "series": []
       },
       "pepy": {
-        "all_time": 34434,
-        "last_month": 3023,
-        "last_day": 70,
+        "all_time": 34457,
+        "last_month": 2891,
+        "last_day": 23,
         "series": [
           {
             "date": "2026-05-18",
@@ -1169,6 +1177,10 @@
           {
             "date": "2026-08-15",
             "downloads": 70
+          },
+          {
+            "date": "2026-08-16",
+            "downloads": 23
           }
         ]
       }
@@ -1183,9 +1195,9 @@
         "series": []
       },
       "pepy": {
-        "all_time": 1716,
-        "last_month": 956,
-        "last_day": 11,
+        "all_time": 1719,
+        "last_month": 940,
+        "last_day": 3,
         "series": [
           {
             "date": "2026-07-09",
@@ -1330,6 +1342,10 @@
           {
             "date": "2026-08-15",
             "downloads": 11
+          },
+          {
+            "date": "2026-08-16",
+            "downloads": 3
           }
         ]
       }
