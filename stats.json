@@ -1,5 +1,5 @@
 {
-  "generated": "2026-08-19T05:20:56.759226+00:00",
+  "generated": "2026-08-19T06:27:21.843891+00:00",
   "packages": [
     {
       "package": "db2-sqlglot-dialect",
@@ -11,9 +11,9 @@
         "series": []
       },
       "pepy": {
-        "all_time": 3158,
-        "last_month": 2430,
-        "last_day": 441,
+        "all_time": 3321,
+        "last_month": 2583,
+        "last_day": 163,
         "series": [
           {
             "date": "2026-06-24",
@@ -230,6 +230,10 @@
           {
             "date": "2026-08-17",
             "downloads": 441
+          },
+          {
+            "date": "2026-08-18",
+            "downloads": 163
           }
         ]
       }
@@ -485,9 +489,9 @@
         "series": []
       },
       "pepy": {
-        "all_time": 114188,
-        "last_month": 85908,
-        "last_day": 1336,
+        "all_time": 117343,
+        "last_month": 88049,
+        "last_day": 3155,
         "series": [
           {
             "date": "2026-05-29",
@@ -812,6 +816,10 @@
           {
             "date": "2026-08-17",
             "downloads": 1336
+          },
+          {
+            "date": "2026-08-18",
+            "downloads": 3155
           }
         ]
       }
@@ -826,9 +834,9 @@
         "series": []
       },
       "pepy": {
-        "all_time": 34599,
-        "last_month": 3029,
-        "last_day": 142,
+        "all_time": 34769,
+        "last_month": 3191,
+        "last_day": 170,
         "series": [
           {
             "date": "2026-05-20",
@@ -1189,6 +1197,10 @@
           {
             "date": "2026-08-17",
             "downloads": 142
+          },
+          {
+            "date": "2026-08-18",
+            "downloads": 170
           }
         ]
       }
@@ -1203,9 +1215,9 @@
         "series": []
       },
       "pepy": {
-        "all_time": 1730,
-        "last_month": 917,
-        "last_day": 11,
+        "all_time": 1735,
+        "last_month": 908,
+        "last_day": 5,
         "series": [
           {
             "date": "2026-07-09",
@@ -1358,6 +1370,10 @@
           {
             "date": "2026-08-17",
             "downloads": 11
+          },
+          {
+            "date": "2026-08-18",
+            "downloads": 5
           }
         ]
       }
