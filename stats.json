@@ -1,5 +1,5 @@
 {
-  "generated": "2026-09-05T05:04:22.755072+00:00",
+  "generated": "2026-09-05T09:40:37.486774+00:00",
   "packages": [
     {
       "package": "db2-sqlglot-dialect",
@@ -11,8 +11,8 @@
         "series": []
       },
       "pepy": {
-        "all_time": 5131,
-        "last_month": 3099,
+        "all_time": 5211,
+        "last_month": 3152,
         "last_day": 80,
         "series": [
           {
@@ -297,6 +297,10 @@
           },
           {
             "date": "2026-09-03",
+            "downloads": 80
+          },
+          {
+            "date": "2026-09-04",
             "downloads": 80
           }
         ]
@@ -597,9 +601,9 @@
         "series": []
       },
       "pepy": {
-        "all_time": 136568,
-        "last_month": 45163,
-        "last_day": 363,
+        "all_time": 136866,
+        "last_month": 41764,
+        "last_day": 298,
         "series": [
           {
             "date": "2026-06-06",
@@ -960,6 +964,10 @@
           {
             "date": "2026-09-03",
             "downloads": 363
+          },
+          {
+            "date": "2026-09-04",
+            "downloads": 298
           }
         ]
       }
@@ -974,9 +982,9 @@
         "series": []
       },
       "pepy": {
-        "all_time": 36012,
-        "last_month": 3137,
-        "last_day": 34,
+        "all_time": 36063,
+        "last_month": 2975,
+        "last_day": 51,
         "series": [
           {
             "date": "2026-06-06",
@@ -1337,6 +1345,10 @@
           {
             "date": "2026-09-03",
             "downloads": 34
+          },
+          {
+            "date": "2026-09-04",
+            "downloads": 51
           }
         ]
       }
@@ -1351,9 +1363,9 @@
         "series": []
       },
       "pepy": {
-        "all_time": 2168,
-        "last_month": 609,
-        "last_day": 17,
+        "all_time": 2191,
+        "last_month": 614,
+        "last_day": 23,
         "series": [
           {
             "date": "2026-07-09",
@@ -1574,6 +1586,10 @@
           {
             "date": "2026-09-03",
             "downloads": 17
+          },
+          {
+            "date": "2026-09-04",
+            "downloads": 23
           }
         ]
       }
