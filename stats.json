@@ -1,5 +1,5 @@
 {
-  "generated": "2026-09-13T02:11:11.862923+00:00",
+  "generated": "2026-09-13T07:48:04.754745+00:00",
   "packages": [
     {
       "package": "db2-sqlglot-dialect",
@@ -11,9 +11,9 @@
         "series": []
       },
       "pepy": {
-        "all_time": 6025,
-        "last_month": 3865,
-        "last_day": 58,
+        "all_time": 6028,
+        "last_month": 3856,
+        "last_day": 3,
         "series": [
           {
             "date": "2026-06-24",
@@ -330,6 +330,10 @@
           {
             "date": "2026-09-11",
             "downloads": 58
+          },
+          {
+            "date": "2026-09-12",
+            "downloads": 3
           }
         ]
       }
@@ -344,9 +348,9 @@
         "series": []
       },
       "pepy": {
-        "all_time": 850,
+        "all_time": 854,
         "last_month": 127,
-        "last_day": 3,
+        "last_day": 4,
         "series": [
           {
             "date": "2026-06-16",
@@ -643,6 +647,10 @@
           {
             "date": "2026-09-11",
             "downloads": 3
+          },
+          {
+            "date": "2026-09-12",
+            "downloads": 4
           }
         ]
       }
@@ -657,9 +665,9 @@
         "series": []
       },
       "pepy": {
-        "all_time": 139693,
-        "last_month": 31683,
-        "last_day": 640,
+        "all_time": 140121,
+        "last_month": 30607,
+        "last_day": 428,
         "series": [
           {
             "date": "2026-06-14",
@@ -1020,6 +1028,10 @@
           {
             "date": "2026-09-11",
             "downloads": 640
+          },
+          {
+            "date": "2026-09-12",
+            "downloads": 428
           }
         ]
       }
@@ -1034,9 +1046,9 @@
         "series": []
       },
       "pepy": {
-        "all_time": 36439,
-        "last_month": 2301,
-        "last_day": 38,
+        "all_time": 36470,
+        "last_month": 2131,
+        "last_day": 31,
         "series": [
           {
             "date": "2026-06-14",
@@ -1397,6 +1409,10 @@
           {
             "date": "2026-09-11",
             "downloads": 38
+          },
+          {
+            "date": "2026-09-12",
+            "downloads": 31
           }
         ]
       }
@@ -1411,9 +1427,9 @@
         "series": []
       },
       "pepy": {
-        "all_time": 2305,
-        "last_month": 623,
-        "last_day": 15,
+        "all_time": 2324,
+        "last_month": 630,
+        "last_day": 19,
         "series": [
           {
             "date": "2026-07-09",
@@ -1666,6 +1682,10 @@
           {
             "date": "2026-09-11",
             "downloads": 15
+          },
+          {
+            "date": "2026-09-12",
+            "downloads": 19
           }
         ]
       }
@@ -1680,9 +1700,9 @@
         "series": []
       },
       "pepy": {
-        "all_time": 3278,
-        "last_month": 161,
-        "last_day": 2,
+        "all_time": 3286,
+        "last_month": 157,
+        "last_day": 8,
         "series": [
           {
             "date": "2026-06-14",
@@ -1963,6 +1983,10 @@
           {
             "date": "2026-09-11",
             "downloads": 2
+          },
+          {
+            "date": "2026-09-12",
+            "downloads": 8
           }
         ]
       }
