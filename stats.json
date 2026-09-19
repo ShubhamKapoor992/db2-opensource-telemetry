@@ -1,5 +1,5 @@
 {
-  "generated": "2026-09-18T22:04:45.002244+00:00",
+  "generated": "2026-09-19T00:48:12.566819+00:00",
   "packages": [
     {
       "package": "db2-sqlglot-dialect",
@@ -373,10 +373,6 @@
         "last_day": 3,
         "series": [
           {
-            "date": "2026-06-19",
-            "downloads": 6
-          },
-          {
             "date": "2026-06-20",
             "downloads": 6
           },
@@ -693,10 +689,6 @@
         "last_month": 25616,
         "last_day": 712,
         "series": [
-          {
-            "date": "2026-06-19",
-            "downloads": 690
-          },
           {
             "date": "2026-06-20",
             "downloads": 736
@@ -1074,10 +1066,6 @@
         "last_month": 1878,
         "last_day": 31,
         "series": [
-          {
-            "date": "2026-06-19",
-            "downloads": 92
-          },
           {
             "date": "2026-06-20",
             "downloads": 24
@@ -1748,10 +1736,6 @@
         "last_month": 155,
         "last_day": 2,
         "series": [
-          {
-            "date": "2026-06-19",
-            "downloads": 9
-          },
           {
             "date": "2026-06-21",
             "downloads": 15
