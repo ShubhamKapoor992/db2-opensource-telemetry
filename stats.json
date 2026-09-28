@@ -1,5 +1,5 @@
 {
-  "generated": "2026-09-28T06:07:09.178693+00:00",
+  "generated": "2026-09-28T14:43:34.498890+00:00",
   "packages": [
     {
       "package": "db2-sqlglot-dialect",
@@ -11,9 +11,9 @@
         "series": []
       },
       "pepy": {
-        "all_time": 6413,
-        "last_month": 1859,
-        "last_day": 6,
+        "all_time": 6415,
+        "last_month": 1829,
+        "last_day": 2,
         "series": [
           {
             "date": "2026-06-29",
@@ -370,6 +370,10 @@
           {
             "date": "2026-09-26",
             "downloads": 6
+          },
+          {
+            "date": "2026-09-27",
+            "downloads": 2
           }
         ]
       }
@@ -384,9 +388,9 @@
         "series": []
       },
       "pepy": {
-        "all_time": 893,
-        "last_month": 132,
-        "last_day": 7,
+        "all_time": 899,
+        "last_month": 136,
+        "last_day": 6,
         "series": [
           {
             "date": "2026-06-29",
@@ -675,6 +679,10 @@
           {
             "date": "2026-09-26",
             "downloads": 7
+          },
+          {
+            "date": "2026-09-27",
+            "downloads": 6
           }
         ]
       }
@@ -689,9 +697,9 @@
         "series": []
       },
       "pepy": {
-        "all_time": 146452,
-        "last_month": 13525,
-        "last_day": 240,
+        "all_time": 146677,
+        "last_month": 13319,
+        "last_day": 225,
         "series": [
           {
             "date": "2026-06-29",
@@ -1052,6 +1060,10 @@
           {
             "date": "2026-09-26",
             "downloads": 240
+          },
+          {
+            "date": "2026-09-27",
+            "downloads": 225
           }
         ]
       }
@@ -1066,9 +1078,9 @@
         "series": []
       },
       "pepy": {
-        "all_time": 37096,
-        "last_month": 1382,
-        "last_day": 15,
+        "all_time": 37116,
+        "last_month": 1360,
+        "last_day": 20,
         "series": [
           {
             "date": "2026-06-29",
@@ -1429,6 +1441,10 @@
           {
             "date": "2026-09-26",
             "downloads": 15
+          },
+          {
+            "date": "2026-09-27",
+            "downloads": 20
           }
         ]
       }
@@ -1443,9 +1459,9 @@
         "series": []
       },
       "pepy": {
-        "all_time": 2494,
-        "last_month": 655,
-        "last_day": 14,
+        "all_time": 2509,
+        "last_month": 643,
+        "last_day": 15,
         "series": [
           {
             "date": "2026-07-09",
@@ -1758,6 +1774,10 @@
           {
             "date": "2026-09-26",
             "downloads": 14
+          },
+          {
+            "date": "2026-09-27",
+            "downloads": 15
           }
         ]
       }
