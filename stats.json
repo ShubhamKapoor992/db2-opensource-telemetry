@@ -1,5 +1,5 @@
 {
-  "generated": "2026-10-12T00:51:08.289938+00:00",
+  "generated": "2026-10-12T06:47:29.251782+00:00",
   "packages": [
     {
       "package": "db2-sqlglot-dialect",
@@ -11,9 +11,9 @@
         "series": []
       },
       "pepy": {
-        "all_time": 7258,
-        "last_month": 1291,
-        "last_day": 72,
+        "all_time": 7277,
+        "last_month": 1252,
+        "last_day": 19,
         "series": [
           {
             "date": "2026-07-13",
@@ -370,6 +370,10 @@
           {
             "date": "2026-10-10",
             "downloads": 72
+          },
+          {
+            "date": "2026-10-11",
+            "downloads": 19
           }
         ]
       }
