@@ -1,5 +1,5 @@
 {
-  "generated": "2026-11-06T21:53:07.022296+00:00",
+  "generated": "2026-11-07T01:27:36.640064+00:00",
   "packages": [
     {
       "package": "db2-sqlglot-dialect",
@@ -15,10 +15,6 @@
         "last_month": 1606,
         "last_day": 50,
         "series": [
-          {
-            "date": "2026-08-07",
-            "downloads": 5
-          },
           {
             "date": "2026-08-08",
             "downloads": 4
@@ -397,10 +393,6 @@
         "last_day": 1,
         "series": [
           {
-            "date": "2026-08-07",
-            "downloads": 3
-          },
-          {
             "date": "2026-08-08",
             "downloads": 3
           },
@@ -705,10 +697,6 @@
         "last_month": 16164,
         "last_day": 700,
         "series": [
-          {
-            "date": "2026-08-07",
-            "downloads": 2187
-          },
           {
             "date": "2026-08-08",
             "downloads": 1023
@@ -1083,10 +1071,6 @@
         "last_day": 81,
         "series": [
           {
-            "date": "2026-08-07",
-            "downloads": 153
-          },
-          {
             "date": "2026-08-08",
             "downloads": 35
           },
@@ -1460,10 +1444,6 @@
         "last_day": 19,
         "series": [
           {
-            "date": "2026-08-07",
-            "downloads": 11
-          },
-          {
             "date": "2026-08-08",
             "downloads": 12
           },
@@ -1828,10 +1808,6 @@
         "last_month": 152,
         "last_day": 2,
         "series": [
-          {
-            "date": "2026-08-07",
-            "downloads": 7
-          },
           {
             "date": "2026-08-08",
             "downloads": 2
